@@ -650,6 +650,7 @@ void CMapConverter::Finalize()
 							break;
 						case MENUCLASS_LOOPER:
 							ClassMask = MASK_DEFENDER;
+							break;
 						case MENUCLASS_FFS:
 							ClassMask = MASK_KING;
 							break;
