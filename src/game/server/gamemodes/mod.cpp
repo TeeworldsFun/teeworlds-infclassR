@@ -902,7 +902,7 @@ int CGameControllerMOD::ChooseHumanClass(const CPlayer *pPlayer) const
 		(nbDefender < g_Config.m_InfDefenderLimit && g_Config.m_InfEnableLooper) ?
 		1.0f : 0.0f;
 	Probability[PLAYERCLASS_FFS - START_HUMANCLASS - 1] =
-		(nbDefender < g_Config.m_InfKingLimit && g_Config.m_InfEnableFFS) ?
+		(nbKing < g_Config.m_InfKingLimit && g_Config.m_InfEnableFFS) ?
 		1.0f : 0.0f;
 	
 
@@ -1072,7 +1072,7 @@ bool CGameControllerMOD::IsChoosableClass(int PlayerClass)
 		case PLAYERCLASS_LOOPER:
 			return (nbDefender < g_Config.m_InfDefenderLimit);
 		case PLAYERCLASS_FFS:
-			return (nbDefender < g_Config.m_InfKingLimit);
+			return (nbKing < g_Config.m_InfKingLimit);
 	}
 	
 	return false;
