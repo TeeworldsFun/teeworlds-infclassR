@@ -755,6 +755,8 @@ set_glob(GAME_SERVER GLOB_RECURSE src/game/server
   entities/medic-grenade.h
   entities/ffs-grenade.cpp
   entities/ffs-grenade.h
+  entities/ffs-power.cpp
+  entities/ffs-power.h
   entities/merc-bomb.cpp
   entities/merc-bomb.h
   entities/plasma.cpp

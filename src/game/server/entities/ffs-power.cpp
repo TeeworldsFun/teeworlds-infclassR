@@ -2,47 +2,58 @@
 /* If you are missing that file, acquire a complete release at teeworlds.com.                */
 #include <game/server/gamecontext.h>
 #include <engine/shared/config.h>
-#include "soldier-bomb.h"
+#include "ffs-power.h"
+#include "growingexplosion.h"
 
-CSoldierBomb::CSoldierBomb(CGameWorld *pGameWorld, vec2 Pos, int Owner)
-: CEntity(pGameWorld, CGameWorld::ENTTYPE_SOLDIER_BOMB)
+CFFSPower::CFFSPower(CGameWorld *pGameWorld, vec2 Pos, int Owner)
+: CEntity(pGameWorld, CGameWorld::ENTTYPE_FFS_POWER)
 {
 	m_Pos = Pos;
 	GameWorld()->InsertEntity(this);
-	m_DetectionRadius = 60.0f;
+	m_DetectionRadius = 100.0f;
 	m_StartTick = Server()->Tick();
 	m_Owner = Owner;
-	m_nbBomb = g_Config.m_InfSoldierBombs;
+	m_nbP = g_Config.m_InfFFSPowers;
+    m_Damage = 0;
 	
-	m_IDBomb.set_size(g_Config.m_InfSoldierBombs);
-	for(int i=0; i<m_IDBomb.size(); i++)
+	m_IDP.set_size(g_Config.m_InfFFSPowers);
+	for(int i=0; i<m_IDP.size(); i++)
 	{
-		m_IDBomb[i] = Server()->SnapNewID();
+		m_IDP[i] = Server()->SnapNewID();
 	}
 }
 
-CSoldierBomb::~CSoldierBomb()
+CFFSPower::~CFFSPower()
 {
-	for(int i=0; i<m_IDBomb.size(); i++)
-		Server()->SnapFreeID(m_IDBomb[i]);
+	for(int i=0; i<m_IDP.size(); i++)
+		Server()->SnapFreeID(m_IDP[i]);
 }
 
-void CSoldierBomb::Reset()
+void CFFSPower::Reset()
 {
 	GameServer()->m_World.DestroyEntity(this);
 }
 
-void CSoldierBomb::Explode()
+void CFFSPower::Explode()
 {
 	CCharacter *OwnerChar = GameServer()->GetPlayerChar(m_Owner);
 	if(!OwnerChar)
 		return;
 		
 	vec2 dir = normalize(OwnerChar->m_Pos - m_Pos);
-	
-	
+	m_Damage += 2;
+	if(m_Damage > g_Config.m_InfFFSPowers)
+		m_Damage = g_Config.m_InfFFSPowers;
+
+	float Factor = static_cast<float>(m_Damage)/g_Config.m_InfFFSPowers;
+
 	GameServer()->CreateSound(m_Pos, SOUND_GRENADE_EXPLODE);
 	GameServer()->CreateExplosion(m_Pos, m_Owner, WEAPON_HAMMER, false, TAKEDAMAGEMODE_SELFHARM);
+    if(m_Damage > 1)
+	{
+		GameServer()->CreateSound(m_Pos, SOUND_NINJA_FIRE);
+		new CGrowingExplosion(GameWorld(), m_Pos, vec2(0.0, -1.0), m_Owner, 20.0f * Factor, GROWINGEXPLOSIONEFFECT_FFS_POWER);
+	}
 	for(int i=0; i<6; i++)
 	{
 		float angle = static_cast<float>(i)*2.0*pi/6.0;
@@ -52,53 +63,53 @@ void CSoldierBomb::Explode()
 	for(int i=0; i<12; i++)
 	{
 		float angle = static_cast<float>(i)*2.0*pi/12.0;
-		vec2 expPos = vec2(180.0*cos(angle), 180.0*sin(angle));
+		vec2 expPos = vec2(180.0*cos(angle), 190.0*sin(angle));
 		if(dot(expPos, dir) <= 0)
 		{
 			GameServer()->CreateExplosion(m_Pos + expPos, m_Owner, WEAPON_HAMMER, false, TAKEDAMAGEMODE_SELFHARM);
 		}
 	}
 	
-	m_nbBomb--;
+	m_nbP--;
 	
-	if(m_nbBomb == 0)
+	if(m_nbP == 0)
 	{
 		GameServer()->m_World.DestroyEntity(this);
 	}
 }
 
-void CSoldierBomb::Snap(int SnappingClient)
+void CFFSPower::Snap(int SnappingClient)
 {
 	float time = (Server()->Tick()-m_StartTick)/(float)Server()->TickSpeed();
 	float angle = fmodf(time*pi/2, 2.0f*pi);
 	
-	for(int i=0; i<m_nbBomb; i++)
+	for(int i=0; i<m_nbP; i++)
 	{
 		if(NetworkClipped(SnappingClient))
 			return;
 		
-		float shiftedAngle = angle + 2.0*pi*static_cast<float>(i)/static_cast<float>(m_IDBomb.size());
+		float shiftedAngle = angle + 2.0*pi*static_cast<float>(i)/static_cast<float>(m_IDP.size());
 		
-		CNetObj_Projectile *pProj = static_cast<CNetObj_Projectile *>(Server()->SnapNewItem(NETOBJTYPE_PROJECTILE, m_IDBomb[i], sizeof(CNetObj_Projectile)));
+		CNetObj_Projectile *pProj = static_cast<CNetObj_Projectile *>(Server()->SnapNewItem(NETOBJTYPE_PROJECTILE, m_IDP[i], sizeof(CNetObj_Projectile)));
 		pProj->m_X = (int)(m_Pos.x + m_DetectionRadius*cos(shiftedAngle));
 		pProj->m_Y = (int)(m_Pos.y + m_DetectionRadius*sin(shiftedAngle));
 		pProj->m_VelX = (int)(0.0f);
 		pProj->m_VelY = (int)(0.0f);
 		pProj->m_StartTick = Server()->Tick();
-		pProj->m_Type = WEAPON_SHOTGUN;
+		pProj->m_Type = WEAPON_RIFLE;
 	}
 }
 
-void CSoldierBomb::TickPaused()
+void CFFSPower::TickPaused()
 {
 	++m_StartTick;
 }
 
-bool CSoldierBomb::AddBomb()
+bool CFFSPower::AddP()
 {
-	if(m_nbBomb < m_IDBomb.size())
+	if(m_nbP < m_IDP.size())
 	{
-		m_nbBomb++;
+		m_nbP++;
 		return true;
 	}
 	else return false;

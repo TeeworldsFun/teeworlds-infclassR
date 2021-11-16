@@ -21,6 +21,7 @@
 #include "turret.h"
 #include "looper-wall.h"
 #include "soldier-bomb.h"
+#include "ffs-power.h"
 #include "scientist-laser.h"
 #include "scientist-mine.h"
 #include "biologist-mine.h"
@@ -751,6 +752,24 @@ void CCharacter::FireWeapon()
 					GameServer()->CreateSound(m_Pos, SOUND_GRENADE_FIRE);
 				}
 			}
+			else if(GetClass() == PLAYERCLASS_FFS)
+			{
+				bool PowerFound = false;
+				for(CFFSPower *pP = (CFFSPower*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_FFS_POWER); pP; pP = (CFFSPower*) pP->TypeNext())
+				{
+					if(pP->m_Owner == m_pPlayer->GetCID())
+					{
+						pP->Explode();
+						PowerFound = true;
+					}
+				}
+				
+				if(!PowerFound)
+				{
+					new CFFSPower(GameWorld(), ProjStartPos, m_pPlayer->GetCID());
+					GameServer()->CreateSound(m_Pos, SOUND_RIFLE_FIRE);
+				}
+			}
 			else if(GetClass() == PLAYERCLASS_SNIPER)
 			{
 				if(m_Pos.y > -600.0)
@@ -944,8 +963,7 @@ void CCharacter::FireWeapon()
 							Dir = normalize(pTarget->m_Pos - m_Pos);
 						else
 							Dir = vec2(0.f, -1.f);
-						
-	/* INFECTION MODIFICATION START ***************************************/
+						/* INFECTION MODIFICATION START ***************************************/
 						if(IsZombie())
 						{
 							if(pTarget->IsZombie())
@@ -992,6 +1010,11 @@ void CCharacter::FireWeapon()
 										m_pPlayer->GetCID(), m_ActiveWeapon, TAKEDAMAGEMODE_NOINFECTION);
 							}
 							
+						}
+						else if(GetClass() == PLAYERCLASS_FFS)
+						{
+							pTarget->m_EmoteType = EMOTICON_DEVILTEE;
+							pTarget->m_EmoteStop = Server()->Tick() + Server()->TickSpeed();
 						}
 						else if(GetClass() == PLAYERCLASS_MEDIC)
 						{
@@ -1065,7 +1088,7 @@ void CCharacter::FireWeapon()
 
 		case WEAPON_GUN:
 		{
-			if(GetClass() == PLAYERCLASS_MERCENARY)
+			if(GetClass() == PLAYERCLASS_MERCENARY || GetClass() == PLAYERCLASS_FFS)
 			{
 				CProjectile *pProj = new CProjectile(GameWorld(), WEAPON_GUN,
 					m_pPlayer->GetCID(),
@@ -1420,7 +1443,7 @@ void CCharacter::FireWeapon()
 					new CLaser(GameWorld(), m_Pos, Direction, GameServer()->Tuning()->m_LaserReach, m_pPlayer->GetCID(), Damage);
 					GameServer()->CreateSound(m_Pos, SOUND_RIFLE_FIRE);
 				}
-				else if(GetClass() == PLAYERCLASS_SCIENTIST)
+				else if(GetClass() == PLAYERCLASS_SCIENTIST || GetClass() == PLAYERCLASS_FFS)
 				{
 					//white hole activation in scientist-laser
 					
@@ -2264,7 +2287,7 @@ void CCharacter::Tick()
 					case CMapConverter::MENUCLASS_FFS:
 						if(GameServer()->m_pController->IsChoosableClass(PLAYERCLASS_FFS))
 						{
-							GameServer()->SendBroadcast_Localization(m_pPlayer->GetCID(), BROADCAST_PRIORITY_INTERFACE, BROADCAST_DURATION_REALTIME, _("FlowerFell-Sans"), NULL);
+							GameServer()->SendBroadcast_Localization(m_pPlayer->GetCID(), BROADCAST_PRIORITY_INTERFACE, BROADCAST_DURATION_REALTIME, _("THE K$NG"), NULL);
 							Broadcast = true;
 						}
 						break;
@@ -2400,7 +2423,25 @@ void CCharacter::Tick()
 			);
 		}
 	}
-	else if(GetClass() == PLAYERCLASS_SCIENTIST)
+	else if(GetClass() == PLAYERCLASS_FFS)
+	{
+		int NumP = 0;
+		for(CFFSPower *pP = (CFFSPower*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_FFS_POWER); pP; pP = (CFFSPower*) pP->TypeNext())
+		{
+			if(pP->m_Owner == m_pPlayer->GetCID())
+				NumP += pP->GetNbP();
+		}
+		
+		if(NumP)
+		{
+			GameServer()->SendBroadcast_Localization_P(GetPlayer()->GetCID(), BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME, NumP,
+				_P("One powers left", "{int:NumP} powers left"),
+				"NumP", &NumP,
+				NULL
+			);
+		}
+	}
+	else if(GetClass() == PLAYERCLASS_SCIENTIST || GetClass() == PLAYERCLASS_FFS)
 	{
 		int NumMines = 0;
 		for(CScientistMine *pMine = (CScientistMine*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_SCIENTIST_MINE); pMine; pMine = (CScientistMine*) pMine->TypeNext())
@@ -2438,7 +2479,7 @@ void CCharacter::Tick()
 				NULL
 			);
 		}
-		else if(NumMines > 0 && !pCurrentWhiteHole)
+		else if(NumMines > 0 && !pCurrentWhiteHole && GetClass() != PLAYERCLASS_FFS)
 		{
 			GameServer()->SendBroadcast_Localization_P(GetPlayer()->GetCID(), BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME, NumMines,
 				_P("One mine is active", "{int:NumMines} mines are active"),
@@ -3649,9 +3690,7 @@ void CCharacter::ClassSpawnAttributes()
 		case PLAYERCLASS_FFS:
 			RemoveAllGun();
 			m_pPlayer->m_InfectionTick = -1;
-			m_Health = 15;
-			m_aWeapons[WEAPON_HAMMER].m_Got = true;
-			GiveWeapon(WEAPON_HAMMER, -1);
+			m_Health = 20;
 			GiveWeapon(WEAPON_GUN, -1);
 			GiveWeapon(WEAPON_GRENADE, -1);
 			GiveWeapon(WEAPON_RIFLE, -1);
@@ -3660,7 +3699,7 @@ void CCharacter::ClassSpawnAttributes()
 			GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PLAYERCLASS_FFS);
 			if(!m_pPlayer->IsKnownClass(PLAYERCLASS_FFS))
 			{
-				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help flowerfell-sans” for more information about your class"), NULL);
+				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", "king", NULL);
 				m_pPlayer->m_knownClass[PLAYERCLASS_FFS] = true;
 			}
 			break;
@@ -3974,6 +4013,11 @@ void CCharacter::DestroyChildEntities()
 		if(pFlag->GetOwner() != m_pPlayer->GetCID()) continue;
 		GameServer()->m_World.DestroyEntity(pFlag);
 	}
+	for(CFFSPower *pP = (CFFSPower*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_FFS_POWER); pP; pP = (CFFSPower*) pP->TypeNext())
+	{
+		if(pP->m_Owner != m_pPlayer->GetCID()) continue;
+			GameServer()->m_World.DestroyEntity(pP);
+	}
 			
 	m_FirstShot = true;
 	m_HookMode = 0;
@@ -4110,6 +4154,7 @@ int CCharacter::GetInfWeaponID(int WID)
 		switch(GetClass())
 		{
 			case PLAYERCLASS_MERCENARY:
+			case PLAYERCLASS_FFS:
 				return INFWEAPON_MERCENARY_GUN;
 			default:
 				return INFWEAPON_GUN;

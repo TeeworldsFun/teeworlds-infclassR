@@ -3,6 +3,7 @@
 #include "mod.h"
 
 #include <game/server/player.h>
+#include <game/server/gamecontext.h>
 #include <engine/shared/config.h>
 #include <engine/server/mapconverter.h>
 #include <engine/server/roundstatistics.h>
@@ -521,6 +522,7 @@ void CGameControllerMOD::Snap(int SnappingClient)
 		int Medic = 0;
 		int Hero = 0;
 		int Support = 0;
+		int King = 0;
 		
 		CPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
 		while(Iter.Next())
@@ -545,8 +547,10 @@ void CGameControllerMOD::Snap(int SnappingClient)
 					Hero++;
 					break;
 				case PLAYERCLASS_LOOPER:
-				case PLAYERCLASS_FFS:
 					Defender++;
+					break;
+				case PLAYERCLASS_FFS:
+					King++;
 					break;
 					
 			}
@@ -560,6 +564,8 @@ void CGameControllerMOD::Snap(int SnappingClient)
 			ClassMask |= CMapConverter::MASK_HERO;
 		if(Support < g_Config.m_InfSupportLimit)
 			ClassMask |= CMapConverter::MASK_SUPPORT;
+		if(King < g_Config.m_InfKingLimit)
+			ClassMask |= CMapConverter::MASK_KING;
 	}
 	
 	if(SnappingClient != -1)
@@ -828,6 +834,7 @@ int CGameControllerMOD::ChooseHumanClass(const CPlayer *pPlayer) const
 	int nbHero = 0;
 	int nbMedic = 0;
 	int nbDefender = 0;
+	int nbKing = 0;
 	CPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);	
 	
 	while(Iter.Next())
@@ -852,8 +859,10 @@ int CGameControllerMOD::ChooseHumanClass(const CPlayer *pPlayer) const
 				nbDefender++;
 				break;
 			case PLAYERCLASS_LOOPER:
-			case PLAYERCLASS_FFS:
 				nbDefender++;
+				break;
+			case PLAYERCLASS_FFS:
+				nbKing++;
 				break;
 		}
 	}
@@ -893,7 +902,7 @@ int CGameControllerMOD::ChooseHumanClass(const CPlayer *pPlayer) const
 		(nbDefender < g_Config.m_InfDefenderLimit && g_Config.m_InfEnableLooper) ?
 		1.0f : 0.0f;
 	Probability[PLAYERCLASS_FFS - START_HUMANCLASS - 1] =
-		(nbDefender < g_Config.m_InfDefenderLimit && g_Config.m_InfEnableFFS) ?
+		(nbDefender < g_Config.m_InfKingLimit && g_Config.m_InfEnableFFS) ?
 		1.0f : 0.0f;
 	
 
@@ -1012,6 +1021,7 @@ bool CGameControllerMOD::IsChoosableClass(int PlayerClass)
 	int nbMedic = 0;
 	int nbHero = 0;
 	int nbSupport = 0;
+	int nbKing = 0;
 
 	CPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
 	while(Iter.Next())
@@ -1036,8 +1046,10 @@ bool CGameControllerMOD::IsChoosableClass(int PlayerClass)
 				nbDefender++;
 				break;
 			case PLAYERCLASS_LOOPER:
-			case PLAYERCLASS_FFS:
 				nbDefender++;
+				break;
+			case PLAYERCLASS_FFS:
+				nbKing++;
 				break;
 		}
 	}
@@ -1058,8 +1070,9 @@ bool CGameControllerMOD::IsChoosableClass(int PlayerClass)
 		case PLAYERCLASS_SNIPER:
 			return (nbSupport < g_Config.m_InfSupportLimit);
 		case PLAYERCLASS_LOOPER:
-		case PLAYERCLASS_FFS:
 			return (nbDefender < g_Config.m_InfDefenderLimit);
+		case PLAYERCLASS_FFS:
+			return (nbDefender < g_Config.m_InfKingLimit);
 	}
 	
 	return false;

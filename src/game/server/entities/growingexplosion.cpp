@@ -166,6 +166,7 @@ void CGrowingExplosion::Tick()
 							}
 							break;
 						case GROWINGEXPLOSIONEFFECT_LOVE_INFECTED:
+						case GROWINGEXPLOSIONEFFECT_FFS_POWER:
 							if(random_prob(0.2f))
 							{
 								GameServer()->CreateLoveEvent(TileCenter);
@@ -307,6 +308,7 @@ void CGrowingExplosion::Tick()
 						break;
 					}
 					case GROWINGEXPLOSIONEFFECT_LOVE_INFECTED:
+					case GROWINGEXPLOSIONEFFECT_FFS_POWER:
 					{
 						p->LoveEffect();
 						GameServer()->SendEmoticon(p->GetPlayer()->GetCID(), EMOTICON_HEARTS);

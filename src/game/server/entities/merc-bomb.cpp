@@ -75,7 +75,7 @@ void CMercenaryBomb::Explode()
 	{
 		//GameServer()->CreateSound(m_Pos, SOUND_GRENADE_EXPLODE);
 		//new CGrowingExplosion(GameWorld(), m_Pos, vec2(0.0, -1.0), m_Owner, 16.0f * Factor, GROWINGEXPLOSIONEFFECT_MERC_INFECTED);
-		new CGrowingExplosion(GameWorld(), m_Pos, vec2(0.0, -1.0), m_Owner, 16.0f * Factor, GROWINGEXPLOSIONEFFECT_LOVE_INFECTED);
+		new CGrowingExplosion(GameWorld(), m_Pos, vec2(0.0, -1.0), m_Owner, 20.0f * Factor, GROWINGEXPLOSIONEFFECT_MERC_INFECTED);
 	}
 				
 	GameServer()->m_World.DestroyEntity(this);
@@ -112,7 +112,7 @@ void CMercenaryBomb::Snap(int SnappingClient)
 		pP->m_X = (int)PosStart.x;
 		pP->m_Y = (int)PosStart.y;
 		pP->m_Type = POWERUP_HEALTH;
-		pP->m_Subtype = 0;
+		pP->m_Subtype = 2;
 	}
 	
 	if(SnappingClient == m_Owner && m_LoadingTick > 0)

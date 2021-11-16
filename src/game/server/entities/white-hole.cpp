@@ -126,7 +126,7 @@ void CWhiteHole::Snap(int SnappingClient)
 			pObj->m_VelX = 0;
 			pObj->m_VelY = 0;
 			pObj->m_StartTick = Server()->Tick();
-			pObj->m_Type = WEAPON_HAMMER;
+			pObj->m_Type = WEAPON_GRENADE;
 		}
 	}
 }

@@ -431,8 +431,8 @@ void CGameContext::CreateExplosionDisk(vec2 Pos, float InnerRadius, float Damage
 	}
 }
 
-/*
-void create_smoke(vec2 Pos)
+
+/*void CreateSmoke(vec2 Pos)
 {
 	// create the event
 	EV_EXPLOSION *pEvent = (EV_EXPLOSION *)events.create(EVENT_SMOKE, sizeof(EV_EXPLOSION));
@@ -790,7 +790,7 @@ void CGameContext::SendBroadcast_ClassIntro(int ClientID, int Class)
 			pClassName = Server()->Localization()->Localize(m_apPlayers[ClientID]->GetLanguage(), _("Looper"));
 			break;
 		case PLAYERCLASS_FFS:
-			pClassName = Server()->Localization()->Localize(m_apPlayers[ClientID]->GetLanguage(), _("FlowerFell-Sans"));
+			pClassName = Server()->Localization()->Localize(m_apPlayers[ClientID]->GetLanguage(), _("K$ng"));
 			break;
 		case PLAYERCLASS_SMOKER:
 			pClassName = Server()->Localization()->Localize(m_apPlayers[ClientID]->GetLanguage(), _("Smoker"));
@@ -2856,7 +2856,8 @@ bool CGameContext::ConStartFunRound(IConsole::IResult *pResult, void *pUserData)
 		g_Config.m_InfEnableScientist,
 		g_Config.m_InfEnableSniper,
 		g_Config.m_InfEnableSoldier,
-		g_Config.m_InfEnableLooper
+		g_Config.m_InfEnableLooper,
+		g_Config.m_InfEnableFFS
 	};
 
 	std::vector<const char*> phrases = {
@@ -2917,6 +2918,11 @@ bool CGameContext::ConStartFunRound(IConsole::IResult *pResult, void *pUserData)
 			g_Config.m_InfEnableSoldier = 1;
 			str_format(aBuf, sizeof(aBuf), "%s! Ghouls vs Soldiers%s", title, random_phrase);
 			break;
+		case 8:
+			g_Config.m_InfProbaUndead = 100;
+			g_Config.m_InfEnableFFS = 1;
+			str_format(aBuf, sizeof(aBuf), "OHHHHHHHHHH!! UNDEAD vs THE KING!!");
+			break;
 	}
 	pSelf->m_pController->StartRound();
 	pSelf->CreateSoundGlobal(SOUND_CTF_CAPTURE);
@@ -2975,7 +2981,7 @@ bool CGameContext::ConSetClass(IConsole::IResult *pResult, void *pUserData)
 	else if(str_comp(pClassName, "ninja") == 0) pPlayer->SetClass(PLAYERCLASS_NINJA);
 	else if(str_comp(pClassName, "mercenary") == 0) pPlayer->SetClass(PLAYERCLASS_MERCENARY);
 	else if(str_comp(pClassName, "sniper") == 0) pPlayer->SetClass(PLAYERCLASS_SNIPER);
-	else if(str_comp(pClassName, "flowerfell-sans") == 0) pPlayer->SetClass(PLAYERCLASS_FFS);
+	else if(str_comp(pClassName, "king") == 0) pPlayer->SetClass(PLAYERCLASS_FFS);
 	else if(str_comp(pClassName, "smoker") == 0) pPlayer->SetClass(PLAYERCLASS_SMOKER);
 	else if(str_comp(pClassName, "hunter") == 0) pPlayer->SetClass(PLAYERCLASS_HUNTER);
 	else if(str_comp(pClassName, "bat") == 0) pPlayer->SetClass(PLAYERCLASS_BAT);
@@ -3154,10 +3160,10 @@ bool CGameContext::PrivateMessage(const char* pStr, int ClientID, bool TeamChat)
 				CheckClass = PLAYERCLASS_MEDIC;
 				str_copy(aChatTitle, "medic", sizeof(aChatTitle));
 			}
-			else if(str_comp(aNameFound, "!flowerfell-sans") == 0 && m_apPlayers[ClientID] && m_apPlayers[ClientID]->GetCharacter())
+			else if(str_comp(aNameFound, "!king") == 0 && m_apPlayers[ClientID] && m_apPlayers[ClientID]->GetCharacter())
 			{
 				CheckClass = PLAYERCLASS_FFS;
-				str_copy(aChatTitle, "ffs", sizeof(aChatTitle));
+				str_copy(aChatTitle, "K$NG", sizeof(aChatTitle));
 			}
 			else if(str_comp(aNameFound, "!hero") == 0 && m_apPlayers[ClientID] && m_apPlayers[ClientID]->GetCharacter())
 			{
@@ -3453,6 +3459,8 @@ bool CGameContext::ConTop10(IConsole::IResult *pResult, void *pUserData)
 			pSelf->Server()->ShowTop10(ClientID, SQL_SCORETYPE_MERCENARY_SCORE);
 		else if(str_comp_nocase(pArg, "sniper") == 0)
 			pSelf->Server()->ShowTop10(ClientID, SQL_SCORETYPE_SNIPER_SCORE);
+		else if(str_comp_nocase(pArg, "KING") == 0)
+			pSelf->Server()->ShowTop10(ClientID, SQL_SCORETYPE_FFS_SCORE);
 		else if(str_comp_nocase(pArg, "smoker") == 0)
 			pSelf->Server()->ShowTop10(ClientID, SQL_SCORETYPE_SMOKER_SCORE);
 		else if(str_comp_nocase(pArg, "hunter") == 0)
@@ -3507,6 +3515,8 @@ bool CGameContext::ConRank(IConsole::IResult *pResult, void *pUserData)
 			pSelf->Server()->ShowRank(ClientID, SQL_SCORETYPE_MERCENARY_SCORE);
 		else if(str_comp_nocase(pArg, "sniper") == 0)
 			pSelf->Server()->ShowRank(ClientID, SQL_SCORETYPE_SNIPER_SCORE);
+		else if(str_comp_nocase(pArg, "KING") == 0)
+			pSelf->Server()->ShowRank(ClientID, SQL_SCORETYPE_FFS_SCORE);
 		else if(str_comp_nocase(pArg, "smoker") == 0)
 			pSelf->Server()->ShowRank(ClientID, SQL_SCORETYPE_SMOKER_SCORE);
 		else if(str_comp_nocase(pArg, "hunter") == 0)
@@ -3562,6 +3572,8 @@ bool CGameContext::ConGoal(IConsole::IResult *pResult, void *pUserData)
 			pSelf->Server()->ShowGoal(ClientID, SQL_SCORETYPE_MERCENARY_SCORE);
 		else if(str_comp_nocase(pArg, "sniper") == 0)
 			pSelf->Server()->ShowGoal(ClientID, SQL_SCORETYPE_SNIPER_SCORE);
+		else if(str_comp_nocase(pArg, "KING") == 0)
+			pSelf->Server()->ShowGoal(ClientID, SQL_SCORETYPE_FFS_SCORE);
 		else if(str_comp_nocase(pArg, "smoker") == 0)
 			pSelf->Server()->ShowGoal(ClientID, SQL_SCORETYPE_SMOKER_SCORE);
 		else if(str_comp_nocase(pArg, "hunter") == 0)
@@ -3844,6 +3856,19 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult, void *pUserData)
 			
 			pSelf->SendMOTD(ClientID, Buffer.buffer());
 		}
+		else if(str_comp_nocase(pHelpPage, "king") == 0)
+		{
+			Buffer.append("~~ ");
+			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("K$NG"), NULL); 
+			Buffer.append(" ~~\n\n");
+			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The king has the hammer special skills of soldiers and mercenaries."), NULL);
+			Buffer.append("\n\n");
+			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("He has scientist's rifle"), NULL);
+			Buffer.append("\n\n");
+			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("He can use grenade put C4 Bomb."), NULL);
+			
+			pSelf->SendMOTD(ClientID, Buffer.buffer());
+		}
 		else if(str_comp_nocase(pHelpPage, "bat") == 0)
 		{
 			Buffer.append("~~ ");
@@ -4059,7 +4084,7 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult, void *pUserData)
 		);
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "help", Buffer.buffer());
 		
-		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "help", "engineer, soldier, scientist, medic, hero, ninja, mercenary, sniper, flowerfell-sans, whiteHole");		
+		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "help", "engineer, soldier, scientist, medic, hero, ninja, mercenary, sniper, king, whiteHole");		
 		pSelf->Console()->Print(IConsole::OUTPUT_LEVEL_STANDARD, "help", "smoker, hunter, bat, boomer, ghost, spider, ghoul, voodoo, undead, witch.");		
 	}
 	

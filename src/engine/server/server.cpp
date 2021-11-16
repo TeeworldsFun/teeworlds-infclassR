@@ -102,6 +102,8 @@ static inline int ChallengeTypeToScoreType(int ChallengeType)
 			return SQL_SCORETYPE_BIOLOGIST_SCORE;
 		case 9:
 			return SQL_SCORETYPE_LOOPER_SCORE;
+		case 9:
+			return SQL_SCORETYPE_FFS_SCORE;
 	}
 	
 	return SQL_SCORETYPE_ROUND_SCORE;
@@ -3537,7 +3539,7 @@ public:
 					pMOTD += str_length(pMOTD);
 					break;
 				case SQL_SCORETYPE_FFS_SCORE:
-					str_copy(pMOTD, "== Best FlowerFell-Sans ==\n32 best scores on this map\n\n", sizeof(aBuf)-(pMOTD-aBuf));
+					str_copy(pMOTD, "== Best K$NG ==\n32 best scores on this map\n\n", sizeof(aBuf)-(pMOTD-aBuf));
 					pMOTD += str_length(pMOTD);
 					break;
 				case SQL_SCORETYPE_HERO_SCORE:
@@ -3710,7 +3712,7 @@ public:
 						str_copy(pMOTD, "== Mercenary of the day ==\nBest score in one round\n\n", sizeof(aMotdBuf)-(pMOTD-aMotdBuf));
 						break;
 					case SQL_SCORETYPE_FFS_SCORE:
-						str_copy(pMOTD, "== FlowerFell-Sans of the day ==\nBest score in one round\n\n", sizeof(aMotdBuf)-(pMOTD-aMotdBuf));
+						str_copy(pMOTD, "== KING of the day ==\nBest score in one round\n\n", sizeof(aMotdBuf)-(pMOTD-aMotdBuf));
 						break;
 				}
 				pMOTD += str_length(pMOTD);
@@ -4326,7 +4328,7 @@ public:
 			if(m_PlayerStatistics.m_SniperScore > 0)
 				UpdateScore(pSqlServer, SQL_SCORETYPE_SNIPER_SCORE, m_PlayerStatistics.m_SniperScore, "Sniper");
 			if(m_PlayerStatistics.m_FFSScore > 0)
-				UpdateScore(pSqlServer, SQL_SCORETYPE_FFS_SCORE, m_PlayerStatistics.m_FFSScore, "FlowerFell-Sans");
+				UpdateScore(pSqlServer, SQL_SCORETYPE_FFS_SCORE, m_PlayerStatistics.m_FFSScore, "K$ng");
 				
 			if(m_PlayerStatistics.m_SmokerScore > 0)
 				UpdateScore(pSqlServer, SQL_SCORETYPE_SMOKER_SCORE, m_PlayerStatistics.m_SmokerScore, "Smoker");

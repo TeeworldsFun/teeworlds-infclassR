@@ -649,8 +649,9 @@ void CMapConverter::Finalize()
 							ClassMask = MASK_DEFENDER;
 							break;
 						case MENUCLASS_LOOPER:
-						case MENUCLASS_FFS:
 							ClassMask = MASK_DEFENDER;
+						case MENUCLASS_FFS:
+							ClassMask = MASK_KING;
 							break;
 						case MENUCLASS_MEDIC:
 							ClassMask = MASK_MEDIC;
@@ -821,7 +822,7 @@ void CMapConverter::Finalize()
 								AddTeeLayer("Sniper", SniperImageID, Pos, 64.0f, m_NumEnvs-1);
 								break;
 							case MENUCLASS_FFS:
-								AddTeeLayer("FlowerFell-Sans", FFSImageID, Pos, 64.0f, m_NumEnvs-1);
+								AddTeeLayer("King", FFSImageID, Pos, 64.0f, m_NumEnvs-1);
 								break;
 						}
 					}
