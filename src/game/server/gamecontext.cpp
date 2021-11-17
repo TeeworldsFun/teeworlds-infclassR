@@ -1451,6 +1451,9 @@ void CGameContext::OnClientEnter(int ClientID)
 /* INFECTION MODIFICATION START ***************************************/
 	SendChatTarget_Localization(-1, CHATCATEGORY_PLAYER, _("{str:PlayerName} entered and joined the game"), "PlayerName", Server()->ClientName(ClientID), NULL);
 	SendChatTarget(ClientID, "Join our Discord server: discord.gg/Sxk5ssv");
+#ifdef CONF_SQL
+	SendChatTarget_Localization(-1, CHATCATEGORY_PLAYER, _("输入/register 用户名(你的游戏名) 密码注册  输入/login 用户名(你的游戏名) 密码 来登录账号"));
+#endif
 /* INFECTION MODIFICATION END *****************************************/
 
 	char aBuf[512];
