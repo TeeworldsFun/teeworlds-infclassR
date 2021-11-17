@@ -11,13 +11,18 @@ endif()
 if(NOT ZLIB_FOUND)
   set(ZLIB_BUNDLED ON)
   set(ZLIB_SRC_DIR src/engine/external/zlib)
-  set_glob(ZLIB_SRC GLOB ${ZLIB_SRC_DIR}
+  set_src(ZLIB_SRC GLOB ${ZLIB_SRC_DIR}
     adler32.c
     compress.c
     crc32.c
     crc32.h
     deflate.c
     deflate.h
+    gzclose.c
+    gzguts.h
+    gzlib.c
+    gzread.c
+    gzwrite.c
     infback.c
     inffast.c
     inffast.h

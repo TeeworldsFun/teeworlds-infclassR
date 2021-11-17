@@ -4219,12 +4219,10 @@ bool CGameContext::ConCmdList(IConsole::IResult *pResult, void *pUserData)
 	Buffer.append("\n\n");
 	pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, "/msg, /mute", NULL);
 	Buffer.append("\n\n");
-#ifdef CONF_SQL
 	pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, "/register, /login, /logout, /setemail", NULL);
 	Buffer.append("\n\n");
 	pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, "/challenge, /top10, /rank, /goal", NULL);
 	Buffer.append("\n\n");
-#endif
 	pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("Press <F3> or <F4> to enable or disable hook protection"), NULL);
 			
 	pSelf->SendMOTD(ClientID, Buffer.buffer());

@@ -102,7 +102,7 @@ static inline int ChallengeTypeToScoreType(int ChallengeType)
 			return SQL_SCORETYPE_BIOLOGIST_SCORE;
 		case 9:
 			return SQL_SCORETYPE_LOOPER_SCORE;
-		case 9:
+		case 10:
 			return SQL_SCORETYPE_FFS_SCORE;
 	}
 	
@@ -581,7 +581,7 @@ int CServer::Init()
 	m_ChallengeRefreshTick = 0;
 	m_aChallengeWinner[0] = 0;
 #endif
-		
+
 /* INFECTION MODIFICATION START ***************************************/
 	SetFireDelay(INFWEAPON_NONE, 0);
 	SetFireDelay(INFWEAPON_HAMMER, 125);
@@ -2261,8 +2261,8 @@ int CServer::Run()
 					}
 					m_lGameServerCmds.clear();
 					lock_release(m_GameServerCmdLock);
-				} 
-#endif
+				}
+#endif 
 			}
 
 			// snap game
@@ -2761,10 +2761,8 @@ void CServer::RegisterCommands()
 	Console()->Register("whisper", "s<id> r<txt>", CFGFLAG_SERVER, ConWhisper, this, "Analogous to 'Say' but sent to a single client only");
 	
 /* INFECTION MODIFICATION START ***************************************/
-#ifdef CONF_SQL
 	Console()->Register("inf_add_sqlserver", "ssssssi?i", CFGFLAG_SERVER, ConAddSqlServer, this, "add a sqlserver");
 	Console()->Register("inf_list_sqlservers", "s", CFGFLAG_SERVER, ConDumpSqlServers, this, "list all sqlservers readservers = r, writeservers = w");
-#endif
 	Console()->Register("print_idcount", "", CFGFLAG_SERVER, ConGetIDCount, this, "prints how many entity ids are currently used - useful for debugging");
 /* INFECTION MODIFICATION END *****************************************/
 
@@ -3313,9 +3311,9 @@ public:
 		{
 			//Check for registration flooding
 			str_format(aBuf, sizeof(aBuf), 
-				"SELECT UserId FROM %s_Users "
-				"WHERE RegisterIp = '%s' AND TIMESTAMPDIFF(MINUTE, RegisterDate, UTC_TIMESTAMP()) < 5;"
-				, pSqlServer->GetPrefix(), aAddrStr);
+				"SELECT UserId FROM %s_Users WHERE Username = '%s';"
+				, pSqlServer->GetPrefix()
+				, m_sName.ClrStr());
 			pSqlServer->executeSqlQuery(aBuf);
 			
 			if(pSqlServer->GetResults()->next())
@@ -3338,12 +3336,13 @@ public:
 		
 		try
 		{
-			//Check if the username is already taken
 			str_format(aBuf, sizeof(aBuf), 
-				"SELECT UserId FROM %s_Users "
-				"WHERE Username COLLATE UTF8_GENERAL_CI = '%s' COLLATE UTF8_GENERAL_CI;"
-				, pSqlServer->GetPrefix(), m_sName.ClrStr());
-			pSqlServer->executeSqlQuery(aBuf);
+				"INSERT INTO %s_Users "
+				"(Username, PasswordHash, Email, RegisterDate, RegisterIp) "
+				"VALUES ('%s', '%s', '%s', UTC_TIMESTAMP(), '%s');"
+				, pSqlServer->GetPrefix()
+				, m_sName.ClrStr(), m_sPasswordHash.ClrStr(), m_sEmail.ClrStr(), aAddrStr);
+			pSqlServer->executeSql(aBuf);
 
 			if(pSqlServer->GetResults()->next())
 			{
@@ -4328,7 +4327,7 @@ public:
 			if(m_PlayerStatistics.m_SniperScore > 0)
 				UpdateScore(pSqlServer, SQL_SCORETYPE_SNIPER_SCORE, m_PlayerStatistics.m_SniperScore, "Sniper");
 			if(m_PlayerStatistics.m_FFSScore > 0)
-				UpdateScore(pSqlServer, SQL_SCORETYPE_FFS_SCORE, m_PlayerStatistics.m_FFSScore, "K$ng");
+				UpdateScore(pSqlServer, SQL_SCORETYPE_FFS_SCORE, m_PlayerStatistics.m_FFSScore, "King");
 				
 			if(m_PlayerStatistics.m_SmokerScore > 0)
 				UpdateScore(pSqlServer, SQL_SCORETYPE_SMOKER_SCORE, m_PlayerStatistics.m_SmokerScore, "Smoker");

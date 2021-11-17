@@ -211,7 +211,7 @@ public:
 		{
 			str_format(msgbuf, sizeof(msgbuf), "%s: %s", ClientName(pMsg->m_ClientID), pMsg->m_pMessage);
 			pMsg->m_pMessage = msgbuf;
-			pMsg->m_ClientID = VANILLA_MAX_CLIENTS - 1;
+			pMsg->m_ClientID = MAX_CLIENTS - 1;
 		}
 		return SendPackMsgOne(pMsg, Flags, ClientID);
 	}
@@ -240,7 +240,7 @@ public:
 			return true;
 		int* map = GetIdMap(client);
 		bool found = false;
-		for (int i = 0; i < VANILLA_MAX_CLIENTS; i++)
+		for (int i = 0; i < MAX_CLIENTS; i++)
 		{
 			if (target == map[i])
 			{

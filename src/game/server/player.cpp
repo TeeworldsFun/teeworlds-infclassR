@@ -40,7 +40,7 @@ CPlayer::CPlayer(CGameContext *pGameServer, int ClientID, int Team)
 		m_knownClass[i] = false;
 	
 	int* idMap = Server()->GetIdMap(ClientID);
-	for (int i = 1;i < VANILLA_MAX_CLIENTS;i++)
+	for (int i = 1;i < MAX_CLIENTS;i++)
 	{
 		idMap[i] = -1;
 	}
@@ -406,7 +406,7 @@ void CPlayer::FakeSnap(int SnappingClient)
 	if (info.m_CustClt)
 		return;
 
-	int id = VANILLA_MAX_CLIENTS - 1;
+	int id = MAX_CLIENTS - 1;
 
 	CNetObj_ClientInfo *pClientInfo = static_cast<CNetObj_ClientInfo *>(Server()->SnapNewItem(NETOBJTYPE_CLIENTINFO, id, sizeof(CNetObj_ClientInfo)));
 
