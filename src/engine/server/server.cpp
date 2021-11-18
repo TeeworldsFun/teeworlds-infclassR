@@ -41,6 +41,7 @@
 #include <algorithm>
 #include <engine/server/mapconverter.h>
 #include <engine/server/sql_job.h>
+#include <engine/server/sql_server.h>
 #include <engine/server/crypt.h>
 
 #include <teeuniverses/components/localization.h>
