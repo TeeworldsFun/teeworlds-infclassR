@@ -1652,7 +1652,7 @@ void CServer::SendServerInfo(const NETADDR *pAddr, int Token, bool Extended, boo
 					str_format(aBuf, sizeof(aBuf), "%s | %s: %s", g_Config.m_SvName, "HeroOfTheDay", m_aChallengeWinner);
 					break;
 				case SQL_SCORETYPE_FFS_SCORE:
-					str_format(aBuf, sizeof(aBuf), "%s | %s: %s", g_Config.m_SvName, "FFSOfTheDay", m_aChallengeWinner);
+					str_format(aBuf, sizeof(aBuf), "%s | %s: %s", g_Config.m_SvName, "KingOfTheDay", m_aChallengeWinner);
 					break;
 			}
 			lock_release(m_ChallengeLock);
