@@ -2761,8 +2761,10 @@ void CServer::RegisterCommands()
 	Console()->Register("whisper", "s<id> r<txt>", CFGFLAG_SERVER, ConWhisper, this, "Analogous to 'Say' but sent to a single client only");
 	
 /* INFECTION MODIFICATION START ***************************************/
+#ifdef CONF_SQL
 	Console()->Register("inf_add_sqlserver", "ssssssi?i", CFGFLAG_SERVER, ConAddSqlServer, this, "add a sqlserver");
 	Console()->Register("inf_list_sqlservers", "s", CFGFLAG_SERVER, ConDumpSqlServers, this, "list all sqlservers readservers = r, writeservers = w");
+#endif
 	Console()->Register("print_idcount", "", CFGFLAG_SERVER, ConGetIDCount, this, "prints how many entity ids are currently used - useful for debugging");
 /* INFECTION MODIFICATION END *****************************************/
 
