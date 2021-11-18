@@ -3028,7 +3028,7 @@ bool CGameContext::ConChatInfo(IConsole::IResult *pResult, void *pUserData)
 	dynamic_string Buffer;
 	
 	const char aThanks[] = "guenstig werben, Defeater, Orangus, BlinderHeld, Warpaint, Serena, FakeDeath, tee_to_F_U_UP!, Denis, NanoSlime_, tria, pinkieval…";
-	const char aContributors[] = "necropotame, Stitch626, yavl, Socialdarwinist,\nbretonium,duralakun,FluffyTee|Bro,ResamVi";
+	const char aContributors[] = "necropotame, Stitch626, yavl, Socialdarwinist,\nbretonium,duralakun,FluffyTee|Bro,ResamVi,FlowerFell-Sans";
 	
 	
 	pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("InfectionClass, by necropotame (version {str:VersionCode})"), "VersionCode", "OI2", NULL); 

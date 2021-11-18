@@ -3676,7 +3676,7 @@ public:
 				pSqlServer->executeSqlQuery(aBuf);
 				
 				switch(m_ScoreType)
-				{
+				{	
 					case SQL_SCORETYPE_ROUND_SCORE:
 						str_copy(pMOTD, "== Player of the day ==\nBest score in one round\n\n", sizeof(aMotdBuf)-(pMOTD-aMotdBuf));
 						break;

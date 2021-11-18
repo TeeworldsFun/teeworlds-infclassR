@@ -1945,7 +1945,7 @@ void CCharacter::Tick()
 	}
 	
 	//Ghost
-	if(GetClass() == PLAYERCLASS_GHOST)
+	if(GetClass() == PLAYERCLASS_GHOST || GetClass() == PLAYERCLASS_NINJA)
 	{
 		if(Server()->Tick() < m_InvisibleTick + 3*Server()->TickSpeed() || IsFrozen() || IsInSlowMotion())
 		{
@@ -3202,7 +3202,7 @@ void CCharacter::Snap(int SnappingClient)
 
 	if(SnappingClient != -1)
 	{
-	if(GetClass() == PLAYERCLASS_GHOST)
+	if(GetClass() == PLAYERCLASS_GHOST || GetClass() == PLAYERCLASS_NINJA)
 	{
 		if(!pClient->IsZombie() && m_IsInvisible) return;
 	}
@@ -3892,7 +3892,7 @@ void CCharacter::ClassSpawnAttributes()
 			if(!m_pPlayer->IsKnownClass(PLAYERCLASS_UNDEAD))
 			{
 				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", "undead", NULL);
-				m_pPlayer->m_knownClass[PLAYERCLASS_HUNTER] = true;
+				m_pPlayer->m_knownClass[PLAYERCLASS_UNDEAD] = true;
 			}
 			break;
 		case PLAYERCLASS_WITCH:
