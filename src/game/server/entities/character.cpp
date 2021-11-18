@@ -1944,7 +1944,7 @@ void CCharacter::Tick()
 		m_InAirTick = 0;
 	}
 	
-	//Ghost
+	//Ghost  Ninja
 	if(GetClass() == PLAYERCLASS_GHOST || GetClass() == PLAYERCLASS_NINJA)
 	{
 		if(Server()->Tick() < m_InvisibleTick + 3*Server()->TickSpeed() || IsFrozen() || IsInSlowMotion())
