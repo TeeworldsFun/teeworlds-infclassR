@@ -105,6 +105,8 @@ MACRO_CONFIG_INT(InfSpiderHookDamage, inf_spider_hook_damage, 1, 0, 10000, CFGFL
 MACRO_CONFIG_INT(InfSmokerHookDamage, inf_smoker_hook_damage, 3, 1, 10000, CFGFLAG_SERVER, "Damage taken by smoker (hook)")
 MACRO_CONFIG_INT(InfSpiderCatchHumans, inf_spider_catch_humans, 1, 0, 1, CFGFLAG_SERVER, "Spider always catch humans with hook")
 MACRO_CONFIG_INT(InfUndeadIncNumKills, inf_undead_inc_num_kills, 0, 0, 1, CFGFLAG_SERVER, "Whether freezing undead increase killer's NumberKills or not")
+MACRO_CONFIG_INT(InfZKingHookTime, inf_zking_hook_time, 1000, 1, 10000, CFGFLAG_SERVER, "For how long zombie kings will be able to hook humans (in seconds)")
+MACRO_CONFIG_INT(InfZKingHookDamage, inf_zking_hook_damage, 1, 0, 10000, CFGFLAG_SERVER, "Damage taken by ZKing (hook)")
 
 MACRO_CONFIG_INT(InfProbaSmoker, inf_proba_smoker, 20, 0, 100, CFGFLAG_SERVER, "Probability for an infected to be a smoker")
 MACRO_CONFIG_INT(InfProbaHunter, inf_proba_hunter, 20, 0, 100, CFGFLAG_SERVER, "Probability for an infected to be a hunter")
@@ -117,6 +119,7 @@ MACRO_CONFIG_INT(InfProbaSlug, inf_proba_slug, 5, 0, 100, CFGFLAG_SERVER, "Proba
 MACRO_CONFIG_INT(InfProbaVoodoo, inf_proba_voodoo, 5, 0, 100, CFGFLAG_SERVER, "Probability for an infected to be a voodoo")
 MACRO_CONFIG_INT(InfProbaWitch, inf_proba_witch, 5, 0, 100, CFGFLAG_SERVER, "Probability for an infected to be a witch")
 MACRO_CONFIG_INT(InfProbaUndead, inf_proba_undead, 4, 0, 100, CFGFLAG_SERVER, "Probability for an infected to be an undead")
+MACRO_CONFIG_INT(InfProbaEvilKing, inf_proba_zking, 5, 0, 100, CFGFLAG_SERVER, "Probability for an infected to be an Zombie King")
 
 MACRO_CONFIG_INT(InfEnableEngineer, inf_enable_engineer, 1, 0, 1, CFGFLAG_SERVER, "Makes the engineer class available")
 MACRO_CONFIG_INT(InfEnableSoldier, inf_enable_soldier, 1, 0, 1, CFGFLAG_SERVER, "Makes the soldier class available")

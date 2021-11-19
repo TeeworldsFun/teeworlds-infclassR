@@ -116,6 +116,9 @@ int CRoundStatistics::CPlayer::OnScoreEvent(int EventType, int Class)
 		case PLAYERCLASS_UNDEAD:
 			m_UndeadScore += Points;
 			break;
+		case PLAYERCLASS_EVILKING:
+			m_ZKingScore += Points;
+			break;
 		case PLAYERCLASS_WITCH:
 			m_WitchScore += Points;
 			break;

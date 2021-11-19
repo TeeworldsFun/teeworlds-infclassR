@@ -422,7 +422,7 @@ void CCharacter::HandleWeaponSwitch()
 	int Next = CountInput(m_LatestPrevInput.m_NextWeapon, m_LatestInput.m_NextWeapon).m_Presses;
 	int Prev = CountInput(m_LatestPrevInput.m_PrevWeapon, m_LatestInput.m_PrevWeapon).m_Presses;
 
-	if(GetClass() == PLAYERCLASS_SPIDER)
+	if(GetClass() == PLAYERCLASS_SPIDER || GetClass() == PLAYERCLASS_EVILKING)
 	{
 		int WantedHookMode = m_HookMode;
 		
@@ -934,7 +934,7 @@ void CCharacter::FireWeapon()
 					m_NumObjectsHit = 0;
 					GameServer()->CreateSound(m_Pos, SOUND_HAMMER_FIRE);
 
-					if(GetClass() == PLAYERCLASS_GHOST)
+					if(GetClass() == PLAYERCLASS_GHOST || GetClass() == PLAYERCLASS_EVILKING)
 					{
 						m_IsInvisible = false;
 						m_InvisibleTick = Server()->Tick();
@@ -992,6 +992,10 @@ void CCharacter::FireWeapon()
 									m_pPlayer->GetCID(), m_ActiveWeapon, TAKEDAMAGEMODE_NOINFECTION);
 							}
 							else if(GetClass() == PLAYERCLASS_SPIDER) {
+								pTarget->TakeDamage(vec2(0.f, -1.f) + normalize(Dir + vec2(0.f, -1.1f)) * 10.0f, g_Config.m_InfSpiderDamage,
+									m_pPlayer->GetCID(), m_ActiveWeapon, TAKEDAMAGEMODE_NOINFECTION);
+							}
+							else if(GetClass() == PLAYERCLASS_EVILKING) {
 								pTarget->TakeDamage(vec2(0.f, -1.f) + normalize(Dir + vec2(0.f, -1.1f)) * 10.0f, g_Config.m_InfSpiderDamage,
 									m_pPlayer->GetCID(), m_ActiveWeapon, TAKEDAMAGEMODE_NOINFECTION);
 							}
@@ -1634,6 +1638,10 @@ void CCharacter::HandleWeapons()
 				{
 					Damage = g_Config.m_InfSpiderHookDamage;
 				}
+				else if(GetClass() == PLAYERCLASS_EVILKING)
+				{
+					Damage = g_Config.m_InfZKingHookDamage;
+				}
 				else if(GetClass() == PLAYERCLASS_GHOUL)
 				{
 					Rate = 0.33f + 0.66f * (1.0f-m_pPlayer->GetGhoulPercent());
@@ -1944,8 +1952,8 @@ void CCharacter::Tick()
 		m_InAirTick = 0;
 	}
 	
-	//Ghost  Ninja
-	if(GetClass() == PLAYERCLASS_GHOST/* || GetClass() == PLAYERCLASS_NINJA*/)
+	//Ghost  ZK
+	if(GetClass() == PLAYERCLASS_GHOST || GetClass() == PLAYERCLASS_EVILKING)
 	{
 		if(Server()->Tick() < m_InvisibleTick + 3*Server()->TickSpeed() || IsFrozen() || IsInSlowMotion())
 		{
@@ -2063,7 +2071,7 @@ void CCharacter::Tick()
 		}
 	}
 	
-	if(GetClass() == PLAYERCLASS_SPIDER)
+	if(GetClass() == PLAYERCLASS_SPIDER || GetClass() == PLAYERCLASS_EVILKING)
 	{
 		if(
 			(m_HookMode == 1 || g_Config.m_InfSpiderCatchHumans) &&
@@ -2126,6 +2134,10 @@ void CCharacter::Tick()
 	{
 		CoreTickParams.m_HookGrabTime = g_Config.m_InfSpiderHookTime*SERVER_TICK_SPEED;
 	}
+	if(GetClass() == PLAYERCLASS_EVILKING)
+	{
+		CoreTickParams.m_HookGrabTime = g_Config.m_InfZKingHookTime*SERVER_TICK_SPEED;
+	}
 	if(GetClass() == PLAYERCLASS_BAT)
 	{
 		CoreTickParams.m_HookGrabTime = g_Config.m_InfBatHookTime*SERVER_TICK_SPEED;
@@ -2175,6 +2187,16 @@ void CCharacter::Tick()
 	{
 		if(IsGrounded()) m_AirJumpCounter = 0;
 		if(m_Core.m_TriggeredEvents&COREEVENT_AIR_JUMP && m_AirJumpCounter < 1)
+		{
+			m_Core.m_Jumped &= ~2;
+			m_AirJumpCounter++;
+		}
+	}
+	
+	if(GetClass() == PLAYERCLASS_EVILKING)
+	{
+		if(IsGrounded()) m_AirJumpCounter = 0;
+		if(m_Core.m_TriggeredEvents&COREEVENT_AIR_JUMP && m_AirJumpCounter < 3)
 		{
 			m_Core.m_Jumped &= ~2;
 			m_AirJumpCounter++;
@@ -2600,7 +2622,7 @@ void CCharacter::Tick()
 			);
 		}
 	}
-	else if(GetClass() == PLAYERCLASS_SPIDER)
+	else if(GetClass() == PLAYERCLASS_SPIDER || GetClass() == PLAYERCLASS_EVILKING)
 	{
 		if(m_HookMode > 0)
 		{
@@ -2735,7 +2757,7 @@ void CCharacter::TickDefered()
 
 
 	if(Events&COREEVENT_HOOK_ATTACH_PLAYER) GameServer()->CreateSound(m_Pos, SOUND_HOOK_ATTACH_PLAYER, CmaskAll());
-	if(GetClass() != PLAYERCLASS_GHOST || !m_IsInvisible)
+	if(GetClass() != PLAYERCLASS_GHOST && GetClass() != PLAYERCLASS_EVILKING || !m_IsInvisible)
 	{
 		if(Events&COREEVENT_GROUND_JUMP) GameServer()->CreateSound(m_Pos, SOUND_PLAYER_JUMP, Mask);
 		if(Events&COREEVENT_HOOK_ATTACH_GROUND) GameServer()->CreateSound(m_Pos, SOUND_HOOK_ATTACH_GROUND, Mask);
@@ -2833,7 +2855,7 @@ int CCharacter::GetHealthArmorSum()
 void CCharacter::Die(int Killer, int Weapon)
 {
 /* INFECTION MODIFICATION START ***************************************/
-	if(GetClass() == PLAYERCLASS_UNDEAD && Killer != m_pPlayer->GetCID())
+	if(GetClass() == PLAYERCLASS_UNDEAD || GetClass() == PLAYERCLASS_EVILKING && Killer != m_pPlayer->GetCID())
 	{
 		Freeze(10.0, Killer, FREEZEREASON_UNDEAD);
 		return;
@@ -2941,6 +2963,12 @@ void CCharacter::Die(int Killer, int Weapon)
 	{
 		m_pPlayer->StartInfection(true);
 		GameServer()->SendBroadcast_Localization(-1, BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE, _("The undead is finally dead"), NULL);
+		GameServer()->CreateSoundGlobal(SOUND_CTF_RETURN);
+	}
+	else if(GetClass() == PLAYERCLASS_EVILKING)
+	{
+		m_pPlayer->StartInfection(true);
+		GameServer()->SendBroadcast_Localization(-1, BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE, _("The Zombie King are dead....?"), NULL);
 		GameServer()->CreateSoundGlobal(SOUND_CTF_RETURN);
 	}
 	else
@@ -3202,7 +3230,7 @@ void CCharacter::Snap(int SnappingClient)
 
 	if(SnappingClient != -1)
 	{
-	if(GetClass() == PLAYERCLASS_GHOST || GetClass() == PLAYERCLASS_NINJA)
+	if(GetClass() == PLAYERCLASS_GHOST || GetClass() == PLAYERCLASS_EVILKING)
 	{
 		if(!pClient->IsZombie() && m_IsInvisible) return;
 	}
@@ -3440,7 +3468,7 @@ void CCharacter::Snap(int SnappingClient)
 		pCharacter->m_Weapon = m_ActiveWeapon;
 	}
 	
-	if(GetClass() == PLAYERCLASS_SPIDER)
+	if(GetClass() == PLAYERCLASS_SPIDER || GetClass() == PLAYERCLASS_EVILKING)
 	{
 		pCharacter->m_HookTick -= (g_Config.m_InfSpiderHookTime - 1) * SERVER_TICK_SPEED-SERVER_TICK_SPEED/5;
 		if(pCharacter->m_HookTick < 0)
@@ -3893,6 +3921,21 @@ void CCharacter::ClassSpawnAttributes()
 			{
 				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", "undead", NULL);
 				m_pPlayer->m_knownClass[PLAYERCLASS_UNDEAD] = true;
+			}
+			break;
+		case PLAYERCLASS_EVILKING:
+			m_Health = 20;
+			m_Armor = 10;
+			RemoveAllGun();
+			m_aWeapons[WEAPON_HAMMER].m_Got = true;
+			GiveWeapon(WEAPON_HAMMER, -1);
+			m_ActiveWeapon = WEAPON_HAMMER;
+			
+			GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PLAYERCLASS_EVILKING);
+			if(!m_pPlayer->IsKnownClass(PLAYERCLASS_EVILKING))
+			{
+				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", "ZKing", NULL);
+				m_pPlayer->m_knownClass[PLAYERCLASS_EVILKING] = true;
 			}
 			break;
 		case PLAYERCLASS_WITCH:

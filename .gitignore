@@ -1,7 +1,6 @@
 autoexec.cfg
 
 .vs*
-bam
 .bam
 /config.lua
 /datasrc/__pycache__
@@ -23,7 +22,13 @@ src/game/generated
 /infclass_srv*
 /infclass_editor*
 /bin/server_d
-/bin
+/bin/src
+/bin/cmake*
+/bin/CMake*
+/bin/Infclass*
+/bin/infclass*
+/bin/Makefile
+/bin/server*
 
 /build
 /infclassR.log

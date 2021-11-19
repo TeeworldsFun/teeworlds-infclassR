@@ -284,6 +284,7 @@ void CGameContext::SetProbabilities(std::vector<int> value) { // todo: should be
 	g_Config.m_InfProbaVoodoo = value[8];
 	g_Config.m_InfGhoulThreshold = value[9];
 	g_Config.m_InfGhoulStomachSize = value[10];
+	g_Config.m_InfProbaEvilKing = value[11];
 }
 
 void CGameContext::CreateDamageInd(vec2 Pos, float Angle, int Amount)
@@ -824,6 +825,9 @@ void CGameContext::SendBroadcast_ClassIntro(int ClientID, int Class)
 			break;
 		case PLAYERCLASS_UNDEAD:
 			pClassName = Server()->Localization()->Localize(m_apPlayers[ClientID]->GetLanguage(), _("Undead"));
+			break;
+		case PLAYERCLASS_EVILKING:
+			pClassName = Server()->Localization()->Localize(m_apPlayers[ClientID]->GetLanguage(), _("ZKing"));
 			break;
 		default:
 			pClassName = Server()->Localization()->Localize(m_apPlayers[ClientID]->GetLanguage(), _("Unknown class"));
@@ -2842,7 +2846,8 @@ bool CGameContext::ConStartFunRound(IConsole::IResult *pResult, void *pUserData)
 		g_Config.m_InfProbaSpider,
 		g_Config.m_InfProbaVoodoo,
 		g_Config.m_InfGhoulThreshold,
-		g_Config.m_InfGhoulStomachSize
+		g_Config.m_InfGhoulStomachSize,
+		g_Config.m_InfProbaEvilKing
 	};
 
 	// humans
@@ -2922,9 +2927,9 @@ bool CGameContext::ConStartFunRound(IConsole::IResult *pResult, void *pUserData)
 			str_format(aBuf, sizeof(aBuf), "%s! Ghouls vs Soldiers%s", title, random_phrase);
 			break;
 		case 8:
-			g_Config.m_InfProbaUndead = 100;
+			g_Config.m_InfProbaEvilKing = 100;
 			g_Config.m_InfEnableFFS = 1;
-			str_format(aBuf, sizeof(aBuf), "OHHHHHHHHHH!! UNDEAD vs THE KING!!");
+			str_format(aBuf, sizeof(aBuf), "OHHHHHHHHHH!! EvilKing vs THE TRUE KING!!");
 			break;
 	}
 	pSelf->m_pController->StartRound();
@@ -2996,6 +3001,7 @@ bool CGameContext::ConSetClass(IConsole::IResult *pResult, void *pUserData)
 	else if(str_comp(pClassName, "voodoo") == 0) pPlayer->SetClass(PLAYERCLASS_VOODOO);
 	else if(str_comp(pClassName, "undead") == 0) pPlayer->SetClass(PLAYERCLASS_UNDEAD);
 	else if(str_comp(pClassName, "witch") == 0) pPlayer->SetClass(PLAYERCLASS_WITCH);
+	else if(str_comp(pClassName, "zking") == 0) pPlayer->SetClass(PLAYERCLASS_EVILKING);
 	else if(str_comp(pClassName, "none") == 0)
 	{
 		pPlayer->SetClass(PLAYERCLASS_NONE);
@@ -3232,6 +3238,11 @@ bool CGameContext::PrivateMessage(const char* pStr, int ClientID, bool TeamChat)
 			{
 				CheckClass = PLAYERCLASS_UNDEAD;
 				str_copy(aChatTitle, "undead", sizeof(aChatTitle));
+			}
+			else if(str_comp(aNameFound, "!ZKing") == 0 && m_apPlayers[ClientID] && m_apPlayers[ClientID]->GetCharacter())
+			{
+				CheckClass = PLAYERCLASS_EVILKING;
+				str_copy(aChatTitle, "ZKing", sizeof(aChatTitle));
 			}
 			else if(str_comp(aNameFound, "!witch") == 0 && m_apPlayers[ClientID] && m_apPlayers[ClientID]->GetCharacter())
 			{

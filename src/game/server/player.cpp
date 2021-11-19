@@ -343,6 +343,9 @@ void CPlayer::Snap(int SnappingClient)
 				case PLAYERCLASS_WITCH:
 					str_format(aClanName, sizeof(aClanName), "%sWitch", Server()->IsClientLogged(GetCID()) ? "@" : " ");
 					break;
+				case PLAYERCLASS_EVILKING:
+					str_format(aClanName, sizeof(aClanName), "%sZKing", Server()->IsClientLogged(GetCID()) ? "@" : " ");
+					break;
 				default:
 					str_format(aClanName, sizeof(aClanName), "%s?????", Server()->IsClientLogged(GetCID()) ? "@" : " ");
 			}
@@ -728,6 +731,12 @@ void CPlayer::SetClassSkin(int newClass, int State)
 		case PLAYERCLASS_UNDEAD:
 			m_TeeInfos.m_UseCustomColor = 1;
 			str_copy(m_TeeInfos.m_SkinName, "redstripe", sizeof(m_TeeInfos.m_SkinName));
+			m_TeeInfos.m_ColorBody = 3014400;
+			m_TeeInfos.m_ColorFeet = 13168;
+			break;
+		case PLAYERCLASS_EVILKING:
+			m_TeeInfos.m_UseCustomColor = 1;
+			str_copy(m_TeeInfos.m_SkinName, "saddo", sizeof(m_TeeInfos.m_SkinName));
 			m_TeeInfos.m_ColorBody = 3014400;
 			m_TeeInfos.m_ColorFeet = 13168;
 			break;

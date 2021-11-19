@@ -52,6 +52,7 @@ public:
 		int m_SlugScore;
 		int m_VoodooScore;
 		int m_UndeadScore;
+		int m_ZKingScore;
 		int m_WitchScore;
 		
 		bool m_WasSpectator;

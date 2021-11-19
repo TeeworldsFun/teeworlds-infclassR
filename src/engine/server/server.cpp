@@ -697,6 +697,7 @@ int CServer::Init()
 	SetClassAvailability(PLAYERCLASS_VOODOO, 1);
 	SetClassAvailability(PLAYERCLASS_UNDEAD, 1);
 	SetClassAvailability(PLAYERCLASS_WITCH, 1);
+	SetClassAvailability(PLAYERCLASS_EVILKING, 1);
 	
 	m_InfClassChooser = 1;
 /* INFECTION MODIFICATION END *****************************************/
@@ -4350,6 +4351,8 @@ public:
 				UpdateScore(pSqlServer, SQL_SCORETYPE_UNDEAD_SCORE, m_PlayerStatistics.m_UndeadScore, "Undead");
 			if(m_PlayerStatistics.m_WitchScore > 0)
 				UpdateScore(pSqlServer, SQL_SCORETYPE_WITCH_SCORE, m_PlayerStatistics.m_WitchScore, "Witch");
+			if(m_PlayerStatistics.m_ZKingScore > 0)
+				UpdateScore(pSqlServer, SQL_SCORETYPE_ZKING_SCORE, m_PlayerStatistics.m_ZKingScore, "ZKing");
 		
 			//Get new score
 			str_format(aBuf, sizeof(aBuf), 

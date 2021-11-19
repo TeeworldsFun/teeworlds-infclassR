@@ -926,6 +926,7 @@ int CGameControllerMOD::ChooseInfectedClass(const CPlayer *pPlayer) const
 	int nbInfected = 0;
 	bool thereIsAWitch = false;
 	bool thereIsAnUndead = false;
+	bool thereIsAZKing = false;
 
 	CPlayerIterator<PLAYERITER_INGAME> Iter(GameServer()->m_apPlayers);
 	while(Iter.Next())
@@ -933,6 +934,7 @@ int CGameControllerMOD::ChooseInfectedClass(const CPlayer *pPlayer) const
 		if(Iter.Player()->IsZombie()) nbInfected++;
 		if(Iter.Player()->GetClass() == PLAYERCLASS_WITCH) thereIsAWitch = true;
 		if(Iter.Player()->GetClass() == PLAYERCLASS_UNDEAD) thereIsAnUndead = true;
+		if(Iter.Player()->GetClass() == PLAYERCLASS_EVILKING) thereIsAZKing = true;
 	}
 	
 	double Probability[NB_INFECTEDCLASS];
@@ -972,6 +974,9 @@ int CGameControllerMOD::ChooseInfectedClass(const CPlayer *pPlayer) const
 	Probability[PLAYERCLASS_UNDEAD - START_INFECTEDCLASS - 1] =
 		(Server()->GetClassAvailability(PLAYERCLASS_UNDEAD) && nbInfected > 2 && !thereIsAnUndead) ?
 		(double) g_Config.m_InfProbaUndead : 0.0f;
+	Probability[PLAYERCLASS_UNDEAD - START_INFECTEDCLASS - 1] =
+		(Server()->GetClassAvailability(PLAYERCLASS_EVILKING) && nbInfected > 2 && !thereIsAZKing) ?
+		(double) g_Config.m_InfProbaEvilKing : 0.0f;
 	
 	int Seconds = (Server()->Tick()-m_RoundStartTick)/((float)Server()->TickSpeed());
 	char aBuf[256];
