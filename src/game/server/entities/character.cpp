@@ -1945,7 +1945,7 @@ void CCharacter::Tick()
 	}
 	
 	//Ghost  Ninja
-	if(GetClass() == PLAYERCLASS_GHOST || GetClass() == PLAYERCLASS_NINJA)
+	if(GetClass() == PLAYERCLASS_GHOST/* || GetClass() == PLAYERCLASS_NINJA*/)
 	{
 		if(Server()->Tick() < m_InvisibleTick + 3*Server()->TickSpeed() || IsFrozen() || IsInSlowMotion())
 		{
@@ -2046,7 +2046,7 @@ void CCharacter::Tick()
 				}
 			}
 			
-			if(HumanFound)
+			if(HumanFound && GetClass() != PLAYERCLASS_NINJA)
 			{				
 				if(m_IsInvisible)
 				{

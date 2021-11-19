@@ -32,7 +32,7 @@ bool CLaser::HitCharacter(vec2 From, vec2 To)
 	m_Pos = At;
 	m_Energy = -1;
 	
-	if (pOwnerChar && pOwnerChar->GetClass() == PLAYERCLASS_MEDIC) { // Revive zombie
+	if (pOwnerChar && pOwnerChar->GetClass() == PLAYERCLASS_MEDIC || pOwnerChar->GetClass() == PLAYERCLASS_FFS) { // Revive zombie
 		const int MIN_ZOMBIES = 5;
 		const int DAMAGE_ON_REVIVE = 17;
 		int old_class = pHit->GetPlayer()->GetOldClass();
@@ -55,7 +55,7 @@ bool CLaser::HitCharacter(vec2 From, vec2 To)
 				zombie->GetPlayer()->GetCharacter()->SetHealthArmor(1, 0);
 				zombie->Unfreeze();
 				medic->TakeDamage(vec2(0.f, 0.f), DAMAGE_ON_REVIVE * 2, m_Owner, WEAPON_RIFLE, TAKEDAMAGEMODE_SELFHARM);
-				GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_DEFAULT, _("Medic {str:MedicName} revived {str:PlayerName}"),
+				GameServer()->SendChatTarget_Localization(-1, CHATCATEGORY_DEFAULT, _("Medic/King {str:MedicName} revived {str:PlayerName}"),
 						"MedicName", Server()->ClientName(medic->GetPlayer()->GetCID()),
 						"PlayerName", Server()->ClientName(zombie->GetPlayer()->GetCID()));
 				int ClientID = medic->GetPlayer()->GetCID();

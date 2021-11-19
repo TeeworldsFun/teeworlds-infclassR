@@ -181,6 +181,7 @@ void CRegister::RegisterUpdate(int Nettype)
 			if(m_RegisterRegisteredServer == -1)
 			{
 				m_pConsole->Print(IConsole::OUTPUT_LEVEL_STANDARD, "register", "WARNING: No master servers. Retrying in 60 seconds");
+				m_pConsole->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FlowerFell-Sans", "too bad.");
 				RegisterNewState(REGISTERSTATE_ERROR);
 			}
 			else
@@ -212,6 +213,7 @@ void CRegister::RegisterUpdate(int Nettype)
 	{
 		if(m_RegisterFirst)
 			m_pConsole->Print(IConsole::OUTPUT_LEVEL_STANDARD, "register", "server registered");
+			m_pConsole->Print(IConsole::OUTPUT_LEVEL_STANDARD, "FlowerFell-Sans", "Good boy, You server are registered, now another one can see you server in server browser, hahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahaha");
 
 		m_RegisterFirst = 0;
 
