@@ -47,8 +47,14 @@ void CFFSPower::Explode()
 
 	float Factor = static_cast<float>(m_Damage)/g_Config.m_InfFFSPowers;
 
+
+	//it cool right? COOL!!!!
 	GameServer()->CreateSound(m_Pos, SOUND_GRENADE_EXPLODE);
-	GameServer()->CreateExplosion(m_Pos, m_Owner, WEAPON_HAMMER, false, TAKEDAMAGEMODE_SELFHARM);
+	GameServer()->CreateExplosion(m_Pos, m_Owner, WEAPON_GUN, false, TAKEDAMAGEMODE_SELFHARM);
+	new CGrowingExplosion(GameWorld(), m_Pos, vec2(0.0, -1.0), m_Owner, 20.0f * Factor, GROWINGEXPLOSIONEFFECT_ELECTRIC_INFECTED);
+	new CGrowingExplosion(GameWorld(), m_Pos, vec2(0.0, -1.0), m_Owner, 20.0f * Factor, GROWINGEXPLOSIONEFFECT_FREEZE_INFECTED);
+	new CGrowingExplosion(GameWorld(), m_Pos, vec2(0.0, -1.0), m_Owner, 20.0f * Factor, GROWINGEXPLOSIONEFFECT_HEAL_HUMANS);
+//	new CGrowingExplosion(GameWorld(), m_Pos, vec2(0.0, -1.0), m_Owner, 20.0f * Factor, GROWINGEXPLOSIONEFFECT_FFS_CK);
     if(m_Damage > 1)
 	{
 		GameServer()->CreateSound(m_Pos, SOUND_NINJA_FIRE);
@@ -58,7 +64,7 @@ void CFFSPower::Explode()
 	{
 		float angle = static_cast<float>(i)*2.0*pi/6.0;
 		vec2 expPos = m_Pos + vec2(90.0*cos(angle), 90.0*sin(angle));
-		GameServer()->CreateExplosion(expPos, m_Owner, WEAPON_HAMMER, false, TAKEDAMAGEMODE_SELFHARM);
+		GameServer()->CreateExplosion(expPos, m_Owner, WEAPON_GUN, false, TAKEDAMAGEMODE_SELFHARM);
 	}
 	for(int i=0; i<12; i++)
 	{
@@ -66,7 +72,7 @@ void CFFSPower::Explode()
 		vec2 expPos = vec2(180.0*cos(angle), 190.0*sin(angle));
 		if(dot(expPos, dir) <= 0)
 		{
-			GameServer()->CreateExplosion(m_Pos + expPos, m_Owner, WEAPON_HAMMER, false, TAKEDAMAGEMODE_SELFHARM);
+			GameServer()->CreateExplosion(m_Pos + expPos, m_Owner, WEAPON_GUN, false, TAKEDAMAGEMODE_SELFHARM);
 		}
 	}
 	

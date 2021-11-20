@@ -110,10 +110,10 @@ m_pConsole(pConsole)
 	m_NinjaVelocityBuff = 0;
 	m_NinjaStrengthBuff = 0;
 	m_NinjaAmmoBuff = 0;
-	m_HasWhiteHole = false;
+	m_HasWhiteHole = true;
 	m_HasIndicator = false;
 	m_TurretCount = 0;
-	m_HasStunGrenade = false;
+	m_HasStunGrenade = true;
 	m_VoodooTimeAlive = Server()->TickSpeed()*g_Config.m_InfVoodooAliveTime;
 	m_VoodooAboutToDie = false;
 	m_BroadcastWhiteHoleReady = -100;
@@ -1014,11 +1014,6 @@ void CCharacter::FireWeapon()
 										m_pPlayer->GetCID(), m_ActiveWeapon, TAKEDAMAGEMODE_NOINFECTION);
 							}
 							
-						}
-						else if(GetClass() == PLAYERCLASS_FFS)
-						{
-							pTarget->m_EmoteType = EMOTICON_DEVILTEE;
-							pTarget->m_EmoteStop = Server()->Tick() + Server()->TickSpeed();
 						}
 						else if(GetClass() == PLAYERCLASS_MEDIC)
 						{
@@ -2474,6 +2469,7 @@ void CCharacter::Tick()
 
 		CWhiteHole* pCurrentWhiteHole = NULL;
 		for(CWhiteHole *pWhiteHole = (CWhiteHole*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_WHITE_HOLE); pWhiteHole; pWhiteHole = (CWhiteHole*) pWhiteHole->TypeNext())
+		//if (GetClass() == PLAYERCLASS_FFS)
 		{
 			if(pWhiteHole->m_Owner == m_pPlayer->GetCID())
 			{
@@ -3718,7 +3714,7 @@ void CCharacter::ClassSpawnAttributes()
 		case PLAYERCLASS_FFS:
 			RemoveAllGun();
 			m_pPlayer->m_InfectionTick = -1;
-			m_Health = 20;
+			m_Health = 7;
 			GiveWeapon(WEAPON_GUN, -1);
 			GiveWeapon(WEAPON_GRENADE, -1);
 			GiveWeapon(WEAPON_RIFLE, -1);

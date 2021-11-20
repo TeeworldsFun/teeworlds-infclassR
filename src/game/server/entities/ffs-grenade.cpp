@@ -39,6 +39,7 @@ void CFFSGrenade::TickPaused()
 
 void CFFSGrenade::Tick()
 {
+	new CGrowingExplosion(GameWorld(), m_ActualPos, m_ActualDir, m_Owner, 4, GROWINGEXPLOSIONEFFECT_ELECTRIC_INFECTED);
 	float Pt = (Server()->Tick()-m_StartTick-1)/(float)Server()->TickSpeed();
 	float Ct = (Server()->Tick()-m_StartTick)/(float)Server()->TickSpeed();
 	vec2 PrevPos = GetPos(Pt);
@@ -93,6 +94,7 @@ void CFFSGrenade::Tick()
 		m_StartTick = Server()->Tick();
 		
 		m_ActualDir = normalize(m_Direction);
+	new CGrowingExplosion(GameWorld(), m_ActualPos, m_ActualDir, m_Owner, 4, GROWINGEXPLOSIONEFFECT_LOVE_INFECTED);
 	}
 	
 }
@@ -121,7 +123,7 @@ void CFFSGrenade::Snap(int SnappingClient)
 	
 void CFFSGrenade::Explode()
 {
-	new CGrowingExplosion(GameWorld(), m_ActualPos, m_ActualDir, m_Owner, 4, GROWINGEXPLOSIONEFFECT_FFS_CK);
+	new CGrowingExplosion(GameWorld(), m_ActualPos, m_ActualDir, m_Owner, 4, GROWINGEXPLOSIONEFFECT_FREEZE_INFECTED);
 	GameServer()->CreateSoundGlobal(SOUND_GRENADE_EXPLODE);
 	GameServer()->m_World.DestroyEntity(this);
 }
