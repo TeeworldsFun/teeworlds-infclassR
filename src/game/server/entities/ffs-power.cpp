@@ -51,14 +51,11 @@ void CFFSPower::Explode()
 	//it cool right? COOL!!!!
 	GameServer()->CreateSound(m_Pos, SOUND_GRENADE_EXPLODE);
 	GameServer()->CreateExplosion(m_Pos, m_Owner, WEAPON_GUN, false, TAKEDAMAGEMODE_SELFHARM);
-	new CGrowingExplosion(GameWorld(), m_Pos, vec2(0.0, -1.0), m_Owner, 20.0f * Factor, GROWINGEXPLOSIONEFFECT_ELECTRIC_INFECTED);
-	new CGrowingExplosion(GameWorld(), m_Pos, vec2(0.0, -1.0), m_Owner, 20.0f * Factor, GROWINGEXPLOSIONEFFECT_FREEZE_INFECTED);
-	new CGrowingExplosion(GameWorld(), m_Pos, vec2(0.0, -1.0), m_Owner, 20.0f * Factor, GROWINGEXPLOSIONEFFECT_HEAL_HUMANS);
-//	new CGrowingExplosion(GameWorld(), m_Pos, vec2(0.0, -1.0), m_Owner, 20.0f * Factor, GROWINGEXPLOSIONEFFECT_FFS_CK);
+	new CGrowingExplosion(GameWorld(), m_Pos, vec2(0.0, -1.0), m_Owner, 5.0f * Factor, GROWINGEXPLOSIONEFFECT_ELECTRIC_INFECTED);
     if(m_Damage > 1)
 	{
 		GameServer()->CreateSound(m_Pos, SOUND_NINJA_FIRE);
-		new CGrowingExplosion(GameWorld(), m_Pos, vec2(0.0, -1.0), m_Owner, 20.0f * Factor, GROWINGEXPLOSIONEFFECT_FFS_POWER);
+		new CGrowingExplosion(GameWorld(), m_Pos, vec2(0.0, -1.0), m_Owner, 5.0f * Factor, GROWINGEXPLOSIONEFFECT_FFS_POWER);
 	}
 	for(int i=0; i<6; i++)
 	{

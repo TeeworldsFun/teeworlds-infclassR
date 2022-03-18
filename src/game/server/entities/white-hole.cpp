@@ -126,7 +126,7 @@ void CWhiteHole::Snap(int SnappingClient)
 			pObj->m_VelX = 0;
 			pObj->m_VelY = 0;
 			pObj->m_StartTick = Server()->Tick();
-			pObj->m_Type = WEAPON_GRENADE;
+			pObj->m_Type = WEAPON_HAMMER;
 		}
 	}
 }
@@ -147,7 +147,7 @@ void CWhiteHole::MoveParticles()
 			if (m_LifeSpan < m_ParticleStopTickTime)
 			{
 				// make particles disappear
-				m_ParticlePos[i] = vec2(-99999.0f, -99999.0f);
+				m_ParticlePos[i] = vec2(99999.0f, 99999.0f);
 				m_ParticleVec[i] = vec2(0.0f, 0.0f);
 				continue;
 			}
@@ -208,7 +208,7 @@ void CWhiteHole::Tick()
 
 		MoveParticles();
 		MovePlayers();
-		GameServer()->CreateLaserDotEvent(m_Pos*3, m_Pos*2, 50);
+		GameServer()->CreateLaserDotEvent(vec2(m_Pos.x+1, m_Pos.y+1), m_Pos*2, 50);
 		GameServer()->CreateLaserDotEvent(m_Pos*2, m_Pos*3, 50);
 	}
 }

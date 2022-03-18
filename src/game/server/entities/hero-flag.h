@@ -10,7 +10,7 @@ class CHeroFlag : public CEntity
 public:
 	enum
 	{
-		RADIUS = 50,
+		RADIUS = 1,
 		SHIELD_COUNT = 4,
 		SPEED = 15, // higher = slower
 	};

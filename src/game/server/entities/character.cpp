@@ -110,7 +110,7 @@ m_pConsole(pConsole)
 	m_NinjaVelocityBuff = 0;
 	m_NinjaStrengthBuff = 0;
 	m_NinjaAmmoBuff = 0;
-	m_HasWhiteHole = true;
+	m_HasWhiteHole = false;
 	m_HasIndicator = false;
 	m_TurretCount = 0;
 	m_HasStunGrenade = true;

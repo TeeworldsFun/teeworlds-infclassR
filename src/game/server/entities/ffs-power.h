@@ -28,6 +28,7 @@ public:
 	float m_DetectionRadius;
 	int m_Owner;
     int m_Damage;
+	float m_Degres;
 };
 
 #endif

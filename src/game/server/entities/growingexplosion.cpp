@@ -311,7 +311,7 @@ void CGrowingExplosion::Tick()
 					case GROWINGEXPLOSIONEFFECT_FFS_POWER:
 					{
 						p->LoveEffect();
-						GameServer()->SendEmoticon(p->GetPlayer()->GetCID(), EMOTICON_HEARTS);
+						GameServer()->SendEmoticon(p->GetPlayer()->GetCID(), EMOTICON_WTF);
 						m_Hit[p->GetPlayer()->GetCID()] = true;
 						break;
 					}
