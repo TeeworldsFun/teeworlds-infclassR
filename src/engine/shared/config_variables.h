@@ -102,6 +102,7 @@ MACRO_CONFIG_INT(InfBatHookTime, inf_bat_hook_time, 5, 1, 10000, CFGFLAG_SERVER,
 MACRO_CONFIG_INT(InfSpiderHookTime, inf_spider_hook_time, 3, 1, 10000, CFGFLAG_SERVER, "For how long spiders will be able to hook humans (in seconds)")
 MACRO_CONFIG_INT(InfSpiderDamage, inf_spider_damage, 10, 1, 10000, CFGFLAG_SERVER, "Damage taken by spider")
 MACRO_CONFIG_INT(InfSpiderHookDamage, inf_spider_hook_damage, 1, 0, 10000, CFGFLAG_SERVER, "Damage taken by spider (hook)")
+MACRO_CONFIG_INT(InfSpiderWebHookLength, inf_spider_web_hook_length, 600, 0, 10000, CFGFLAG_SERVER, "The maximum length of spider web hook")
 MACRO_CONFIG_INT(InfSmokerHookDamage, inf_smoker_hook_damage, 3, 1, 10000, CFGFLAG_SERVER, "Damage taken by smoker (hook)")
 MACRO_CONFIG_INT(InfSpiderCatchHumans, inf_spider_catch_humans, 1, 0, 1, CFGFLAG_SERVER, "Spider always catch humans with hook")
 MACRO_CONFIG_INT(InfUndeadIncNumKills, inf_undead_inc_num_kills, 0, 0, 1, CFGFLAG_SERVER, "Whether freezing undead increase killer's NumberKills or not")

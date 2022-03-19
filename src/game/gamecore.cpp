@@ -2,7 +2,9 @@
 /* If you are missing that file, acquire a complete release at teeworlds.com.                */
 #include "gamecore.h"
 
-const char *CTuningParams::m_apNames[] =
+#include <engine/shared/config.h>
+
+const char *CTuningParams::ms_apNames[] =
 {
 	#define MACRO_TUNING_PARAM(Name,ScriptName,Value) #ScriptName,
 	#include "tuning.h"
@@ -18,7 +20,7 @@ bool CTuningParams::Set(int Index, float Value)
 	return true;
 }
 
-bool CTuningParams::Get(int Index, float *pValue)
+bool CTuningParams::Get(int Index, float *pValue) const
 {
 	if(Index < 0 || Index >= Num())
 		return false;
@@ -29,15 +31,15 @@ bool CTuningParams::Get(int Index, float *pValue)
 bool CTuningParams::Set(const char *pName, float Value)
 {
 	for(int i = 0; i < Num(); i++)
-		if(str_comp_nocase(pName, m_apNames[i]) == 0)
+		if(str_comp_nocase(pName, ms_apNames[i]) == 0)
 			return Set(i, Value);
 	return false;
 }
 
-bool CTuningParams::Get(const char *pName, float *pValue)
+bool CTuningParams::Get(const char *pName, float *pValue) const
 {
 	for(int i = 0; i < Num(); i++)
-		if(str_comp_nocase(pName, m_apNames[i]) == 0)
+		if(str_comp_nocase(pName, ms_apNames[i]) == 0)
 			return Get(i, pValue);
 
 	return false;
@@ -54,6 +56,9 @@ float VelocityRamp(float Value, float Start, float Range, float Curvature)
 		return 1.0f;
 	return 1.0f/powf(Curvature, (Value-Start)/Range);
 }
+
+const float CCharacterCore::PhysicalSize = 28.0f;
+const float CCharacterCore::PassengerYOffset = -50;
 
 void CCharacterCore::Init(CWorldCore *pWorld, CCollision *pCollision)
 {
@@ -80,18 +85,17 @@ void CCharacterCore::Reset()
 void CCharacterCore::Tick(bool UseInput, CParams* pParams)
 {
 	const CTuningParams* pTuningParams = pParams->m_pTuningParams;
-	float PhysSize = 28.0f;
 	m_TriggeredEvents = 0;
 
 	// get ground state
 	bool Grounded = false;
-	if(m_pCollision->CheckPoint(m_Pos.x+PhysSize/2, m_Pos.y+PhysSize/2+5))
+	if(m_pCollision->CheckPoint(m_Pos.x+PhysicalSize/2, m_Pos.y+PhysicalSize/2+5))
 		Grounded = true;
-	if(m_pCollision->CheckPoint(m_Pos.x-PhysSize/2, m_Pos.y+PhysSize/2+5))
+	if(m_pCollision->CheckPoint(m_Pos.x-PhysicalSize/2, m_Pos.y+PhysicalSize/2+5))
 		Grounded = true;
 	
 	bool Stucked = false;
-	Stucked = m_pCollision->TestBox(m_Pos, vec2(28.0f, 28.0f));
+	Stucked = m_pCollision->TestBox(m_Pos, vec2(PhysicalSize, PhysicalSize));
 	
 	vec2 TargetDirection = normalize(vec2(m_Input.m_TargetX, m_Input.m_TargetY));
 
@@ -102,10 +106,9 @@ void CCharacterCore::Tick(bool UseInput, CParams* pParams)
 	float Friction = Grounded ? pTuningParams->m_GroundFriction : pTuningParams->m_AirFriction;
 
 	// InfClassR taxi mode, todo: cleanup & move out from core
-	if (m_Passenger && (m_Passenger->m_Input.m_Jump > 0 || m_Passenger->m_Infected || (m_Infected || m_HookProtected))) {
-		m_Passenger->m_IsPassenger = false;
-		m_Passenger->m_ProbablyStucked = true;
-		m_Passenger = nullptr;
+	if (m_Passenger && (m_Passenger->m_Input.m_Jump > 0))
+	{
+		SetPassenger(nullptr);
 	}
 
 	if (m_Passenger) {
@@ -113,7 +116,7 @@ void CCharacterCore::Tick(bool UseInput, CParams* pParams)
 		if (abs(m_Passenger->m_Vel.y) <= 1.0f)
 			m_Passenger->m_Vel.y = 0.0f;
 		m_Passenger->m_Pos.x = m_Pos.x;
-		m_Passenger->m_Pos.y = m_Pos.y - 50;
+		m_Passenger->m_Pos.y = m_Pos.y + PassengerYOffset;
 	}
 
 	if (m_ProbablyStucked) {
@@ -170,7 +173,7 @@ void CCharacterCore::Tick(bool UseInput, CParams* pParams)
 			if(m_HookState == HOOK_IDLE)
 			{
 				m_HookState = HOOK_FLYING;
-				m_HookPos = m_Pos+TargetDirection*PhysSize*1.5f;
+				m_HookPos = m_Pos+TargetDirection*PhysicalSize*1.5f;
 				m_HookDir = TargetDirection;
 				m_HookedPlayer = -1;
 				m_HookTick = 0;
@@ -250,7 +253,7 @@ void CCharacterCore::Tick(bool UseInput, CParams* pParams)
 					continue;
 
 				vec2 ClosestPoint = closest_point_on_line(m_HookPos, NewPos, pCharCore->m_Pos);
-				if(distance(pCharCore->m_Pos, ClosestPoint) < PhysSize+2.0f)
+				if(distance(pCharCore->m_Pos, ClosestPoint) < PhysicalSize+2.0f)
 				{
 					if (m_HookedPlayer == -1 || distance(m_HookPos, pCharCore->m_Pos) < Distance)
 					{
@@ -334,7 +337,7 @@ void CCharacterCore::Tick(bool UseInput, CParams* pParams)
 			m_HookPos = m_Pos;
 		}
 		
-		if(pParams->m_HookMode == 1 && distance(m_HookPos, m_Pos) > 600.0f)
+		if(pParams->m_HookMode == 1 && distance(m_HookPos, m_Pos) > g_Config.m_InfSpiderWebHookLength)
 		{
 			// release hook
 			m_HookedPlayer = -1;
@@ -361,27 +364,22 @@ void CCharacterCore::Tick(bool UseInput, CParams* pParams)
 			// handle hook influence
 			if(m_HookedPlayer == i)
 			{
-				if(Distance > PhysSize*1.50f) // TODO: fix tweakable variable
+				if(Distance > PhysicalSize*1.50f) // TODO: fix tweakable variable
 				{
 					float Accel = pTuningParams->m_HookDragAccel * (Distance/pTuningParams->m_HookLength);
 					float DragSpeed = pTuningParams->m_HookDragSpeed;
 
 					// add force to the hooked player
-					bool BothInfected = m_Infected && pCharCore->m_Infected;
-					bool BothHumans = !m_Infected && !pCharCore->m_Infected;
-					if(!(m_HookProtected && !pCharCore->m_HookProtected && (BothInfected || BothHumans))) { // if condition for tarzan-mode
-						pCharCore->m_Vel.x = SaturatedAdd(-DragSpeed, DragSpeed, pCharCore->m_Vel.x, Accel*Dir.x*1.5f);
-						pCharCore->m_Vel.y = SaturatedAdd(-DragSpeed, DragSpeed, pCharCore->m_Vel.y, Accel*Dir.y*1.5f);
-					}
-					
+					pCharCore->m_Vel.x = SaturatedAdd(-DragSpeed, DragSpeed, pCharCore->m_Vel.x, Accel*Dir.x*1.5f);
+					pCharCore->m_Vel.y = SaturatedAdd(-DragSpeed, DragSpeed, pCharCore->m_Vel.y, Accel*Dir.y*1.5f);
+
 					// add a little bit force to the guy who has the grip
 					m_Vel.x = SaturatedAdd(-DragSpeed, DragSpeed, m_Vel.x, -Accel*Dir.x*0.25f);
 					m_Vel.y = SaturatedAdd(-DragSpeed, DragSpeed, m_Vel.y, -Accel*Dir.y*0.25f);
 
 					// InfClassR taxi mode, todo: cleanup
 					if (!pCharCore->m_Passenger && (!m_Infected && !pCharCore->m_Infected && !m_HookProtected) && !IsChildCharacter(pCharCore, this)) {
-						pCharCore->m_Passenger = this;
-						m_IsPassenger = true;
+						pCharCore->SetPassenger(this);
 						m_HookedPlayer = -1;
 						m_HookState = HOOK_RETRACTED;
 						m_HookPos = m_Pos;
@@ -394,9 +392,9 @@ void CCharacterCore::Tick(bool UseInput, CParams* pParams)
 				continue;
 			if ((m_Infected && pCharCore->m_Infected) && (m_HookProtected || pCharCore->m_HookProtected))
 				continue;
-			if(!pTuningParams->m_PlayerCollision && Distance < PhysSize*1.25f && Distance > 0.0f)
+			if(!pTuningParams->m_PlayerCollision && Distance < PhysicalSize*1.25f && Distance > 0.0f)
 			{
-				float a = (PhysSize*1.45f - Distance);
+				float a = (PhysicalSize*1.45f - Distance);
 				float Velocity = 0.5f;
 
 				// make sure that we don't add excess force by checking the
@@ -517,3 +515,24 @@ bool CCharacterCore::IsChildCharacter(CCharacterCore *suspect, CCharacterCore *m
 	else return false;
 }
 
+void CCharacterCore::SetPassenger(CCharacterCore *pPassenger)
+{
+	if(m_Passenger == pPassenger)
+		return;
+
+	if (m_Passenger)
+	{
+		m_Passenger->m_IsPassenger = false;
+		m_Passenger->m_ProbablyStucked = true;
+	}
+	m_Passenger = pPassenger;
+	if (pPassenger)
+	{
+		m_Passenger->m_IsPassenger = true;
+	}
+}
+
+void CCharacterCore::EnableJump()
+{
+	m_Jumped &= ~2;
+}
