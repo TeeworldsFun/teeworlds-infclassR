@@ -779,6 +779,10 @@ set_glob(GAME_SERVER GLOB_RECURSE src/game/server
   entities/turret.h
   entities/white-hole.cpp
   entities/white-hole.h
+  entities/dirty-deep-done-dirt-cheap.cpp
+  entities/dirty-deep-done-dirt-cheap.h
+  entities/love-train.cpp
+  entities/love-train.h
   entity.cpp
   entity.h
   eventhandler.cpp

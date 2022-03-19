@@ -566,7 +566,7 @@ void CMapConverter::Finalize()
 	int NinjaImageID = AddExternalImage("../skins/x_ninja", 256, 128);
 	int MercenaryImageID = AddExternalImage("../skins/bluestripe", 256, 128);
 	int SniperImageID = AddExternalImage("../skins/warpaint", 256, 128);
-	int FFSImageID = AddExternalImage("../skins/pinky", 256, 128);
+	int FFSImageID = AddExternalImage("../skins/oldman", 256, 128);
 	
 	//Menu
 	
@@ -823,7 +823,7 @@ void CMapConverter::Finalize()
 								AddTeeLayer("Sniper", SniperImageID, Pos, 64.0f, m_NumEnvs-1);
 								break;
 							case MENUCLASS_FFS:
-								AddTeeLayer("King", FFSImageID, Pos, 64.0f, m_NumEnvs-1);
+								AddTeeLayer("Funny Valentine", FFSImageID, Pos, 64.0f, m_NumEnvs-1);
 								break;
 						}
 					}

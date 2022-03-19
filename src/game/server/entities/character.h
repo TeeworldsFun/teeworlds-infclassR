@@ -231,7 +231,8 @@ public:
 	bool m_VoodooAboutToDie;
 	int m_TurretCount;
 	int m_ResetKillsTime;
-	
+	vec2 m_D4CToPos;
+	bool LoveTrain;
 
 public:
 	void DestroyChildEntities();
@@ -264,6 +265,9 @@ public:
 	void SaturateVelocity(vec2 Force, float MaxSpeed);
 	void GiveGift(int GiftType);
 	int GetInfZoneTick();
+
+	void TeleportPlayer(vec2 Pos);
+	void GenerateFPos(int ClientID);
 /* INFECTION MODIFICATION END *****************************************/
 };
 

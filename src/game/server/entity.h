@@ -155,6 +155,8 @@ public:
 			Contains the current posititon of the entity.
 	*/
 	vec2 m_Pos;
+
+	bool IsMarkedForDestroy() const		{ return m_MarkedForDestroy; }
 };
 
 class CAnimatedEntity : public CEntity

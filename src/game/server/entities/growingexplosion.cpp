@@ -190,6 +190,18 @@ void CGrowingExplosion::Tick()
 								GameServer()->CreateExplosion(TileCenter, m_Owner, WEAPON_GUN, false, TAKEDAMAGEMODE_SELFHARM);
 							}
 							break;
+						case GROWINGEXPLOSIONEFFECT_D4C:
+							if (random_prob(1.0f))
+							{
+								GameServer()->CreatePlayerSpawn(TileCenter);
+							}
+							break;
+						case GROWINGEXPLOSIONEFFECT_D4C_EFFECT:
+							if (random_prob(1.0f))
+							{
+								GameServer()->CreatePlayerSpawn(TileCenter);
+							}
+							break;
 						case GROWINGEXPLOSIONEFFECT_ELECTRIC_INFECTED:
 							{
 								vec2 EndPoint = m_SeedPos + vec2(32.0f*(i-m_MaxGrowing) - 16.0f + random_float()*32.0f, 32.0f*(j-m_MaxGrowing) - 16.0f + random_float()*32.0f);
@@ -326,6 +338,19 @@ void CGrowingExplosion::Tick()
 					{
 						int Damage = 5+20*((float)(m_MaxGrowing - min(tick - m_StartTick, (int)m_MaxGrowing)))/(m_MaxGrowing);
 						p->TakeDamage(normalize(p->m_Pos - m_SeedPos)*10.0f, Damage, m_Owner, WEAPON_HAMMER, TAKEDAMAGEMODE_NOINFECTION);
+						m_Hit[p->GetPlayer()->GetCID()] = true;
+						break;
+					}
+					case GROWINGEXPLOSIONEFFECT_D4C:
+					{
+						p->GenerateFPos(p->GetPlayer()->GetCID());
+						GameServer()->SendEmoticon(p->GetPlayer()->GetCID(), EMOTICON_EXCLAMATION);
+						m_Hit[p->GetPlayer()->GetCID()] = true;
+						break;
+					}
+					case GROWINGEXPLOSIONEFFECT_D4C_EFFECT:
+					{
+						GameServer()->SendEmoticon(p->GetPlayer()->GetCID(), EMOTICON_EXCLAMATION);
 						m_Hit[p->GetPlayer()->GetCID()] = true;
 						break;
 					}

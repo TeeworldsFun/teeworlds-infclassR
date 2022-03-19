@@ -791,7 +791,7 @@ void CGameContext::SendBroadcast_ClassIntro(int ClientID, int Class)
 			pClassName = Server()->Localization()->Localize(m_apPlayers[ClientID]->GetLanguage(), _("Looper"));
 			break;
 		case PLAYERCLASS_FFS:
-			pClassName = Server()->Localization()->Localize(m_apPlayers[ClientID]->GetLanguage(), _("K$ng"));
+			pClassName = Server()->Localization()->Localize(m_apPlayers[ClientID]->GetLanguage(), _("Valentine"));
 			break;
 		case PLAYERCLASS_SMOKER:
 			pClassName = Server()->Localization()->Localize(m_apPlayers[ClientID]->GetLanguage(), _("Smoker"));
@@ -1526,7 +1526,6 @@ void CGameContext::OnClientConnected(int ClientID)
 	CountActivePlayers();
 	CountSpectators();
 	CountInfPlayers();
-	
 }
 
 void CGameContext::OnClientDrop(int ClientID, int Type, const char *pReason)
@@ -3169,10 +3168,10 @@ bool CGameContext::PrivateMessage(const char* pStr, int ClientID, bool TeamChat)
 				CheckClass = PLAYERCLASS_MEDIC;
 				str_copy(aChatTitle, "medic", sizeof(aChatTitle));
 			}
-			else if(str_comp(aNameFound, "!king") == 0 && m_apPlayers[ClientID] && m_apPlayers[ClientID]->GetCharacter())
+			else if(str_comp(aNameFound, "!valentine") == 0 && m_apPlayers[ClientID] && m_apPlayers[ClientID]->GetCharacter())
 			{
 				CheckClass = PLAYERCLASS_FFS;
-				str_copy(aChatTitle, "K$NG", sizeof(aChatTitle));
+				str_copy(aChatTitle, "Valentine", sizeof(aChatTitle));
 			}
 			else if(str_comp(aNameFound, "!hero") == 0 && m_apPlayers[ClientID] && m_apPlayers[ClientID]->GetCharacter())
 			{
@@ -3870,18 +3869,8 @@ bool CGameContext::ConHelp(IConsole::IResult *pResult, void *pUserData)
 			
 			pSelf->SendMOTD(ClientID, Buffer.buffer());
 		}
-		else if(str_comp_nocase(pHelpPage, "king") == 0)
+		else if(str_comp_nocase(pHelpPage, "1212121211") == 0)
 		{
-			Buffer.append("~~ ");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("K$NG"), NULL); 
-			Buffer.append(" ~~\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("The king has the hammer special skills of soldiers and mercenaries."), NULL);
-			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("He has scientist's rifle"), NULL);
-			Buffer.append("\n\n");
-			pSelf->Server()->Localization()->Format_L(Buffer, pLanguage, _("He can use grenade put C4 Bomb."), NULL);
-			
-			pSelf->SendMOTD(ClientID, Buffer.buffer());
 		}
 		else if(str_comp_nocase(pHelpPage, "bat") == 0)
 		{

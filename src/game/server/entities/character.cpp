@@ -37,7 +37,8 @@
 #include "white-hole.h"
 #include "superweapon-indicator.h"
 #include "laser-teleport.h"
-
+#include "dirty-deep-done-dirt-cheap.h"
+#include "love-train.h"
 //input count
 struct CInputCount
 {
@@ -119,6 +120,7 @@ m_pConsole(pConsole)
 	m_BroadcastWhiteHoleReady = -100;
 	m_pHeroFlag = nullptr;
 	m_ResetKillsTime = 0;
+	LoveTrain = false;
 /* INFECTION MODIFICATION END *****************************************/
 }
 
@@ -753,21 +755,12 @@ void CCharacter::FireWeapon()
 				}
 			}
 			else if(GetClass() == PLAYERCLASS_FFS)
-			{
-				bool PowerFound = false;
-				for(CFFSPower *pP = (CFFSPower*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_FFS_POWER); pP; pP = (CFFSPower*) pP->TypeNext())
+			{	
+				if(!LoveTrain)
 				{
-					if(pP->m_Owner == m_pPlayer->GetCID())
-					{
-						pP->Explode();
-						PowerFound = true;
-					}
-				}
-				
-				if(!PowerFound)
-				{
-					new CFFSPower(GameWorld(), ProjStartPos, m_pPlayer->GetCID());
+					new CLoveTrain(GameWorld(), m_Pos, 200, m_pPlayer->GetCID());
 					GameServer()->CreateSound(m_Pos, SOUND_RIFLE_FIRE);
+					LoveTrain = true;
 				}
 			}
 			else if(GetClass() == PLAYERCLASS_SNIPER)
@@ -1442,7 +1435,7 @@ void CCharacter::FireWeapon()
 					new CLaser(GameWorld(), m_Pos, Direction, GameServer()->Tuning()->m_LaserReach, m_pPlayer->GetCID(), Damage);
 					GameServer()->CreateSound(m_Pos, SOUND_RIFLE_FIRE);
 				}
-				else if(GetClass() == PLAYERCLASS_SCIENTIST || GetClass() == PLAYERCLASS_FFS)
+				else if(GetClass() == PLAYERCLASS_SCIENTIST)
 				{
 					//white hole activation in scientist-laser
 					
@@ -1453,6 +1446,13 @@ void CCharacter::FireWeapon()
 					Damage = 5;
 					new CLaser(GameWorld(), m_Pos, Direction, GameServer()->Tuning()->m_LaserReach*0.7f, m_pPlayer->GetCID(), Damage);
 					GameServer()->CreateSound(m_Pos, SOUND_RIFLE_FIRE);
+				}
+				else if (GetClass() == PLAYERCLASS_FFS)
+				{
+					Damage = 5;
+					new CGrowingExplosion(GameWorld(), m_Pos, Direction, GetPlayer()->GetCID(), 6, GROWINGEXPLOSIONEFFECT_D4C);
+					GenerateFPos(GetPlayer()->GetCID());
+					GameServer()->CreateSound(m_Pos, SOUND_BODY_LAND);
 				}
 				else
 				{
@@ -2304,7 +2304,7 @@ void CCharacter::Tick()
 					case CMapConverter::MENUCLASS_FFS:
 						if(GameServer()->m_pController->IsChoosableClass(PLAYERCLASS_FFS))
 						{
-							GameServer()->SendBroadcast_Localization(m_pPlayer->GetCID(), BROADCAST_PRIORITY_INTERFACE, BROADCAST_DURATION_REALTIME, _("THE K$NG"), NULL);
+							GameServer()->SendBroadcast_Localization(m_pPlayer->GetCID(), BROADCAST_PRIORITY_INTERFACE, BROADCAST_DURATION_REALTIME, _("Funny Valentine"), NULL);
 							Broadcast = true;
 						}
 						break;
@@ -2436,24 +2436,6 @@ void CCharacter::Tick()
 			GameServer()->SendBroadcast_Localization_P(GetPlayer()->GetCID(), BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME, NumBombs,
 				_P("One bomb left", "{int:NumBombs} bombs left"),
 				"NumBombs", &NumBombs,
-				NULL
-			);
-		}
-	}
-	else if(GetClass() == PLAYERCLASS_FFS)
-	{
-		int NumP = 0;
-		for(CFFSPower *pP = (CFFSPower*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_FFS_POWER); pP; pP = (CFFSPower*) pP->TypeNext())
-		{
-			if(pP->m_Owner == m_pPlayer->GetCID())
-				NumP += pP->GetNbP();
-		}
-		
-		if(NumP)
-		{
-			GameServer()->SendBroadcast_Localization_P(GetPlayer()->GetCID(), BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME, NumP,
-				_P("One powers left", "{int:NumP} powers left"),
-				"NumP", &NumP,
 				NULL
 			);
 		}
@@ -3723,7 +3705,7 @@ void CCharacter::ClassSpawnAttributes()
 			GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PLAYERCLASS_FFS);
 			if(!m_pPlayer->IsKnownClass(PLAYERCLASS_FFS))
 			{
-				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", "king", NULL);
+				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", "Funny Valentine", NULL);
 				m_pPlayer->m_knownClass[PLAYERCLASS_FFS] = true;
 			}
 			break;
@@ -4052,7 +4034,7 @@ void CCharacter::DestroyChildEntities()
 		if(pFlag->GetOwner() != m_pPlayer->GetCID()) continue;
 		GameServer()->m_World.DestroyEntity(pFlag);
 	}
-	for(CFFSPower *pP = (CFFSPower*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_FFS_POWER); pP; pP = (CFFSPower*) pP->TypeNext())
+	for(CLoveTrain *pP = (CLoveTrain*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_FFS_POWER); pP; pP = (CLoveTrain*) pP->TypeNext())
 	{
 		if(pP->m_Owner != m_pPlayer->GetCID()) continue;
 			GameServer()->m_World.DestroyEntity(pP);
@@ -4274,4 +4256,30 @@ int CCharacter::GetInfZoneTick() // returns how many ticks long a player is alre
 	if (m_InfZoneTick < 0) return 0;
 	return Server()->Tick()-m_InfZoneTick;
 }
+
+void CCharacter::TeleportPlayer(vec2 Pos)
+{
+	m_Core.m_Pos = Pos;
+	m_Core.m_HookedPlayer = -1;
+	m_Core.m_HookState = HOOK_GRABBED;
+	m_Core.m_HookPos = m_Core.m_Pos;
+}
+
+void CCharacter::GenerateFPos(int ClientID)
+{
+	vec2 randPos((rand() % (GameServer()->Collision()->GetWidth()*32 + 16)),(rand() % (GameServer()->Collision()->GetHeight()*32 + 16)));
+	while(GameServer()->Collision()->CheckPoint(randPos))
+		randPos = vec2((rand() % (GameServer()->Collision()->GetWidth()*32 + 16)),(rand() % (GameServer()->Collision()->GetHeight()*32 + 16)));
+	if(GameServer()->Collision()->GetZoneValueAt(GameServer()->m_ZoneHandle_Damage, randPos) == ZONE_DAMAGE_INFECTION || 
+	   GameServer()->Collision()->CheckPhysicsFlag(randPos, CCollision::COLFLAG_SOLID) ||
+	   GameServer()->Collision()->CheckPhysicsFlag(randPos, CCollision::COLFLAG_NOHOOK))
+	{
+		GenerateFPos(ClientID);
+		return;
+	}
+
+	m_D4CToPos = randPos;
+	TeleportPlayer(m_D4CToPos);
+}
+
 /* INFECTION MODIFICATION END *****************************************/

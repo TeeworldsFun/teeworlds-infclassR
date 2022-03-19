@@ -3542,7 +3542,7 @@ public:
 					pMOTD += str_length(pMOTD);
 					break;
 				case SQL_SCORETYPE_FFS_SCORE:
-					str_copy(pMOTD, "== Best K$NG ==\n32 best scores on this map\n\n", sizeof(aBuf)-(pMOTD-aBuf));
+					str_copy(pMOTD, "== Best Funny Valentine ==\n32 best scores on this map\n\n", sizeof(aBuf)-(pMOTD-aBuf));
 					pMOTD += str_length(pMOTD);
 					break;
 				case SQL_SCORETYPE_HERO_SCORE:
