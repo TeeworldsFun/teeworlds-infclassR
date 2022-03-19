@@ -424,7 +424,7 @@ void CCharacter::HandleWeaponSwitch()
 	int Next = CountInput(m_LatestPrevInput.m_NextWeapon, m_LatestInput.m_NextWeapon).m_Presses;
 	int Prev = CountInput(m_LatestPrevInput.m_PrevWeapon, m_LatestInput.m_PrevWeapon).m_Presses;
 
-	if(GetClass() == PLAYERCLASS_SPIDER || GetClass() == PLAYERCLASS_EVILKING)
+	if(GetClass() == PLAYERCLASS_SPIDER || GetClass() == PLAYERCLASS_JOESTER)
 	{
 		int WantedHookMode = m_HookMode;
 		
@@ -754,13 +754,22 @@ void CCharacter::FireWeapon()
 					GameServer()->CreateSound(m_Pos, SOUND_GRENADE_FIRE);
 				}
 			}
-			else if(GetClass() == PLAYERCLASS_FFS)
+			else if(GetClass() == PLAYERCLASS_VALENTINE)
 			{	
-				if(!LoveTrain)
+				bool LT = false;
+				for(CLoveTrain *pP = (CLoveTrain*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_D4C); pP; pP = (CLoveTrain*) pP->TypeNext())
+				{
+					if(pP->m_Owner == m_pPlayer->GetCID())
+					{
+						pP->Reset();
+						LT = true;
+					}
+				}
+
+				if(!LT)
 				{
 					new CLoveTrain(GameWorld(), m_Pos, 200, m_pPlayer->GetCID());
 					GameServer()->CreateSound(m_Pos, SOUND_RIFLE_FIRE);
-					LoveTrain = true;
 				}
 			}
 			else if(GetClass() == PLAYERCLASS_SNIPER)
@@ -927,7 +936,7 @@ void CCharacter::FireWeapon()
 					m_NumObjectsHit = 0;
 					GameServer()->CreateSound(m_Pos, SOUND_HAMMER_FIRE);
 
-					if(GetClass() == PLAYERCLASS_GHOST || GetClass() == PLAYERCLASS_EVILKING)
+					if(GetClass() == PLAYERCLASS_GHOST || GetClass() == PLAYERCLASS_JOESTER)
 					{
 						m_IsInvisible = false;
 						m_InvisibleTick = Server()->Tick();
@@ -988,7 +997,7 @@ void CCharacter::FireWeapon()
 								pTarget->TakeDamage(vec2(0.f, -1.f) + normalize(Dir + vec2(0.f, -1.1f)) * 10.0f, g_Config.m_InfSpiderDamage,
 									m_pPlayer->GetCID(), m_ActiveWeapon, TAKEDAMAGEMODE_NOINFECTION);
 							}
-							else if(GetClass() == PLAYERCLASS_EVILKING) {
+							else if(GetClass() == PLAYERCLASS_JOESTER) {
 								pTarget->TakeDamage(vec2(0.f, -1.f) + normalize(Dir + vec2(0.f, -1.1f)) * 10.0f, g_Config.m_InfSpiderDamage,
 									m_pPlayer->GetCID(), m_ActiveWeapon, TAKEDAMAGEMODE_NOINFECTION);
 							}
@@ -1080,7 +1089,7 @@ void CCharacter::FireWeapon()
 
 		case WEAPON_GUN:
 		{
-			if(GetClass() == PLAYERCLASS_MERCENARY || GetClass() == PLAYERCLASS_FFS)
+			if(GetClass() == PLAYERCLASS_MERCENARY || GetClass() == PLAYERCLASS_VALENTINE)
 			{
 				CProjectile *pProj = new CProjectile(GameWorld(), WEAPON_GUN,
 					m_pPlayer->GetCID(),
@@ -1132,58 +1141,64 @@ void CCharacter::FireWeapon()
 
 		case WEAPON_SHOTGUN:
 		{
-			int ShotSpread = 3;
-			if(GetClass() == PLAYERCLASS_BIOLOGIST)
-				ShotSpread = 1;
-			
-			CMsgPacker Msg(NETMSGTYPE_SV_EXTRAPROJECTILE);
-			Msg.AddInt(ShotSpread*2+1);
-
-			float Force = 2.0f;
-			if(GetClass() == PLAYERCLASS_MEDIC)
-				Force = 10.0f;
-				
-			for(int i = -ShotSpread; i <= ShotSpread; ++i)
+			if(GetClass() == PLAYERCLASS_VALENTINE)
 			{
-				float Spreading[] = {-0.21f, -0.14f, -0.070f, 0, 0.070f, 0.14f, 0.21f};
-				float a = GetAngle(Direction);
-				a += Spreading[i+3] * 2.0f*(0.25f + 0.75f*static_cast<float>(10-m_aWeapons[WEAPON_SHOTGUN].m_Ammo)/10.0f);
-				float v = 1-(absolute(i)/(float)ShotSpread);
-				float Speed = mix((float)GameServer()->Tuning()->m_ShotgunSpeeddiff, 1.0f, v);
-				
-				float LifeTime = GameServer()->Tuning()->m_ShotgunLifetime + 0.1f*static_cast<float>(m_aWeapons[WEAPON_SHOTGUN].m_Ammo)/10.0f;
-				
-				if(GetClass() == PLAYERCLASS_BIOLOGIST)
-				{
-					CBouncingBullet *pProj = new CBouncingBullet(GameWorld(), m_pPlayer->GetCID(), ProjStartPos, vec2(cosf(a), sinf(a))*Speed);
-
-					// pack the Projectile and send it to the client Directly
-					CNetObj_Projectile p;
-					pProj->FillInfo(&p);
-					for(unsigned i = 0; i < sizeof(CNetObj_Projectile)/sizeof(int); i++)
-						Msg.AddInt(((int *)&p)[i]);
-				}
-				else
-				{
-					CProjectile *pProj = new CProjectile(GameWorld(), WEAPON_SHOTGUN,
-						m_pPlayer->GetCID(),
-						ProjStartPos,
-						vec2(cosf(a), sinf(a))*Speed,
-						(int)(Server()->TickSpeed()*LifeTime),
-						1, 0, Force, -1, WEAPON_SHOTGUN);
-
-					// pack the Projectile and send it to the client Directly
-					CNetObj_Projectile p;
-					pProj->FillInfo(&p);
-					for(unsigned i = 0; i < sizeof(CNetObj_Projectile)/sizeof(int); i++)
-						Msg.AddInt(((int *)&p)[i]);
-				}
-				
+				GameServer()->m_apPlayers[GetPlayer()->GetCID()]->GetCharacter()->GenerateFPos(GetPlayer()->GetCID());
+				GameServer()->SendChat(m_pPlayer->GetCID(), CGameContext::CHAT_ALL, "DOJYAAAa~~~~N!");
 			}
+			else
+			{
+				int ShotSpread = 3;
+				if(GetClass() == PLAYERCLASS_BIOLOGIST)
+					ShotSpread = 1;
 
+				CMsgPacker Msg(NETMSGTYPE_SV_EXTRAPROJECTILE);
+				Msg.AddInt(ShotSpread*2+1);	
+
+				float Force = 2.0f;
+				if(GetClass() == PLAYERCLASS_MEDIC)
+					Force = 10.0f;
+				
+				for(int i = -ShotSpread; i <= ShotSpread; ++i)
+				{
+					float Spreading[] = {-0.21f, -0.14f, -0.070f, 0, 0.070f, 0.14f, 0.21f};
+					float a = GetAngle(Direction);
+					a += Spreading[i+3] * 2.0f*(0.25f + 0.75f*static_cast<float>(10-m_aWeapons[WEAPON_SHOTGUN].m_Ammo)/10.0f);
+					float v = 1-(absolute(i)/(float)ShotSpread);
+					float Speed = mix((float)GameServer()->Tuning()->m_ShotgunSpeeddiff, 1.0f, v);
+				
+					float LifeTime = GameServer()->Tuning()->m_ShotgunLifetime + 0.1f*static_cast<float>(m_aWeapons[WEAPON_SHOTGUN].m_Ammo)/10.0f;
+				
+					if(GetClass() == PLAYERCLASS_BIOLOGIST)
+					{
+						CBouncingBullet *pProj = new CBouncingBullet(GameWorld(), m_pPlayer->GetCID(), ProjStartPos, vec2(cosf(a), sinf(a))*Speed);
+
+						// pack the Projectile and send it to the client Directly
+						CNetObj_Projectile p;
+						pProj->FillInfo(&p);
+						for(unsigned i = 0; i < sizeof(CNetObj_Projectile)/sizeof(int); i++)
+							Msg.AddInt(((int *)&p)[i]);
+					}
+					else
+					{
+						CProjectile *pProj = new CProjectile(GameWorld(), WEAPON_SHOTGUN,
+							m_pPlayer->GetCID(),
+							ProjStartPos,
+							vec2(cosf(a), sinf(a))*Speed,
+							(int)(Server()->TickSpeed()*LifeTime),
+							1, 0, Force, -1, WEAPON_SHOTGUN);
+
+						// pack the Projectile and send it to the client Directly
+						CNetObj_Projectile p;
+						pProj->FillInfo(&p);
+						for(unsigned i = 0; i < sizeof(CNetObj_Projectile)/sizeof(int); i++)
+							Msg.AddInt(((int *)&p)[i]);
+					}			
+				}
 			Server()->SendMsg(&Msg, MSGFLAG_VITAL, m_pPlayer->GetCID());
 
 			GameServer()->CreateSound(m_Pos, SOUND_SHOTGUN_FIRE);
+			}
 		} break;
 
 		case WEAPON_GRENADE:
@@ -1262,7 +1277,7 @@ void CCharacter::FireWeapon()
 					GameServer()->CreateSound(m_Pos, SOUND_GRENADE_FIRE);
 				}
 			}
-			else if(GetClass() == PLAYERCLASS_FFS)
+			else if(GetClass() == PLAYERCLASS_VALENTINE)
 			{
 				//Find bomb
 				bool BombFound = false;
@@ -1447,11 +1462,10 @@ void CCharacter::FireWeapon()
 					new CLaser(GameWorld(), m_Pos, Direction, GameServer()->Tuning()->m_LaserReach*0.7f, m_pPlayer->GetCID(), Damage);
 					GameServer()->CreateSound(m_Pos, SOUND_RIFLE_FIRE);
 				}
-				else if (GetClass() == PLAYERCLASS_FFS)
+				else if (GetClass() == PLAYERCLASS_VALENTINE)
 				{
 					Damage = 5;
 					new CGrowingExplosion(GameWorld(), m_Pos, Direction, GetPlayer()->GetCID(), 6, GROWINGEXPLOSIONEFFECT_D4C);
-					GenerateFPos(GetPlayer()->GetCID());
 					GameServer()->CreateSound(m_Pos, SOUND_BODY_LAND);
 				}
 				else
@@ -1633,7 +1647,7 @@ void CCharacter::HandleWeapons()
 				{
 					Damage = g_Config.m_InfSpiderHookDamage;
 				}
-				else if(GetClass() == PLAYERCLASS_EVILKING)
+				else if(GetClass() == PLAYERCLASS_JOESTER)
 				{
 					Damage = g_Config.m_InfZKingHookDamage;
 				}
@@ -1948,7 +1962,7 @@ void CCharacter::Tick()
 	}
 	
 	//Ghost  ZK
-	if(GetClass() == PLAYERCLASS_GHOST || GetClass() == PLAYERCLASS_EVILKING)
+	if(GetClass() == PLAYERCLASS_GHOST || GetClass() == PLAYERCLASS_JOESTER)
 	{
 		if(Server()->Tick() < m_InvisibleTick + 3*Server()->TickSpeed() || IsFrozen() || IsInSlowMotion())
 		{
@@ -2066,7 +2080,7 @@ void CCharacter::Tick()
 		}
 	}
 	
-	if(GetClass() == PLAYERCLASS_SPIDER || GetClass() == PLAYERCLASS_EVILKING)
+	if(GetClass() == PLAYERCLASS_SPIDER || GetClass() == PLAYERCLASS_JOESTER)
 	{
 		if(
 			(m_HookMode == 1 || g_Config.m_InfSpiderCatchHumans) &&
@@ -2129,7 +2143,7 @@ void CCharacter::Tick()
 	{
 		CoreTickParams.m_HookGrabTime = g_Config.m_InfSpiderHookTime*SERVER_TICK_SPEED;
 	}
-	if(GetClass() == PLAYERCLASS_EVILKING)
+	if(GetClass() == PLAYERCLASS_JOESTER)
 	{
 		CoreTickParams.m_HookGrabTime = g_Config.m_InfZKingHookTime*SERVER_TICK_SPEED;
 	}
@@ -2188,7 +2202,7 @@ void CCharacter::Tick()
 		}
 	}
 	
-	if(GetClass() == PLAYERCLASS_EVILKING)
+	if(GetClass() == PLAYERCLASS_JOESTER)
 	{
 		if(IsGrounded()) m_AirJumpCounter = 0;
 		if(m_Core.m_TriggeredEvents&COREEVENT_AIR_JUMP && m_AirJumpCounter < 3)
@@ -2302,7 +2316,7 @@ void CCharacter::Tick()
 						}
 						break;
 					case CMapConverter::MENUCLASS_FFS:
-						if(GameServer()->m_pController->IsChoosableClass(PLAYERCLASS_FFS))
+						if(GameServer()->m_pController->IsChoosableClass(PLAYERCLASS_VALENTINE))
 						{
 							GameServer()->SendBroadcast_Localization(m_pPlayer->GetCID(), BROADCAST_PRIORITY_INTERFACE, BROADCAST_DURATION_REALTIME, _("Funny Valentine"), NULL);
 							Broadcast = true;
@@ -2359,7 +2373,7 @@ void CCharacter::Tick()
 						NewClass = PLAYERCLASS_LOOPER;
 						break;
 					case CMapConverter::MENUCLASS_FFS:
-						NewClass = PLAYERCLASS_FFS;
+						NewClass = PLAYERCLASS_VALENTINE;
 						break;
 				}
 				
@@ -2368,6 +2382,8 @@ void CCharacter::Tick()
 					m_AntiFireTick = Server()->Tick();
 					m_pPlayer->m_MapMenuItem = 0;
 					m_pPlayer->SetClass(NewClass);
+					if(NewClass == PLAYERCLASS_VALENTINE)
+						GameServer()->SendChat(m_pPlayer->GetCID(), CGameContext::CHAT_ALL, "My heart and actions are utterly unclouded...! They are all those of 'Justice'!");
 					m_pPlayer->SetOldClass(NewClass);
 					
 					if(Bonus)
@@ -2440,7 +2456,7 @@ void CCharacter::Tick()
 			);
 		}
 	}
-	else if(GetClass() == PLAYERCLASS_SCIENTIST || GetClass() == PLAYERCLASS_FFS)
+	else if(GetClass() == PLAYERCLASS_SCIENTIST || GetClass() == PLAYERCLASS_VALENTINE)
 	{
 		int NumMines = 0;
 		for(CScientistMine *pMine = (CScientistMine*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_SCIENTIST_MINE); pMine; pMine = (CScientistMine*) pMine->TypeNext())
@@ -2451,7 +2467,7 @@ void CCharacter::Tick()
 
 		CWhiteHole* pCurrentWhiteHole = NULL;
 		for(CWhiteHole *pWhiteHole = (CWhiteHole*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_WHITE_HOLE); pWhiteHole; pWhiteHole = (CWhiteHole*) pWhiteHole->TypeNext())
-		//if (GetClass() == PLAYERCLASS_FFS)
+		//if (GetClass() == PLAYERCLASS_VALENTINE)
 		{
 			if(pWhiteHole->m_Owner == m_pPlayer->GetCID())
 			{
@@ -2479,7 +2495,7 @@ void CCharacter::Tick()
 				NULL
 			);
 		}
-		else if(NumMines > 0 && !pCurrentWhiteHole && GetClass() != PLAYERCLASS_FFS)
+		else if(NumMines > 0 && !pCurrentWhiteHole && GetClass() != PLAYERCLASS_VALENTINE)
 		{
 			GameServer()->SendBroadcast_Localization_P(GetPlayer()->GetCID(), BROADCAST_PRIORITY_WEAPONSTATE, BROADCAST_DURATION_REALTIME, NumMines,
 				_P("One mine is active", "{int:NumMines} mines are active"),
@@ -2600,7 +2616,7 @@ void CCharacter::Tick()
 			);
 		}
 	}
-	else if(GetClass() == PLAYERCLASS_SPIDER || GetClass() == PLAYERCLASS_EVILKING)
+	else if(GetClass() == PLAYERCLASS_SPIDER || GetClass() == PLAYERCLASS_JOESTER)
 	{
 		if(m_HookMode > 0)
 		{
@@ -2671,8 +2687,9 @@ void CCharacter::GiveGift(int GiftType)
 			GiveWeapon(WEAPON_GUN, -1);
 			GiveWeapon(WEAPON_GRENADE, -1);
 			break;
-		case PLAYERCLASS_FFS:
+		case PLAYERCLASS_VALENTINE:
 			GiveWeapon(WEAPON_GUN, -1);
+			GiveWeapon(WEAPON_SHOTGUN, -1);
 			GiveWeapon(WEAPON_GRENADE, -1);
 			GiveWeapon(WEAPON_RIFLE, -1);
 			break;
@@ -2735,7 +2752,7 @@ void CCharacter::TickDefered()
 
 
 	if(Events&COREEVENT_HOOK_ATTACH_PLAYER) GameServer()->CreateSound(m_Pos, SOUND_HOOK_ATTACH_PLAYER, CmaskAll());
-	if(GetClass() != PLAYERCLASS_GHOST && GetClass() != PLAYERCLASS_EVILKING || !m_IsInvisible)
+	if(GetClass() != PLAYERCLASS_GHOST && GetClass() != PLAYERCLASS_JOESTER || !m_IsInvisible)
 	{
 		if(Events&COREEVENT_GROUND_JUMP) GameServer()->CreateSound(m_Pos, SOUND_PLAYER_JUMP, Mask);
 		if(Events&COREEVENT_HOOK_ATTACH_GROUND) GameServer()->CreateSound(m_Pos, SOUND_HOOK_ATTACH_GROUND, Mask);
@@ -2833,7 +2850,7 @@ int CCharacter::GetHealthArmorSum()
 void CCharacter::Die(int Killer, int Weapon)
 {
 /* INFECTION MODIFICATION START ***************************************/
-	if(GetClass() == PLAYERCLASS_UNDEAD || GetClass() == PLAYERCLASS_EVILKING && Killer != m_pPlayer->GetCID())
+	if(GetClass() == PLAYERCLASS_UNDEAD || GetClass() == PLAYERCLASS_JOESTER && Killer != m_pPlayer->GetCID())
 	{
 		Freeze(10.0, Killer, FREEZEREASON_UNDEAD);
 		return;
@@ -2943,7 +2960,7 @@ void CCharacter::Die(int Killer, int Weapon)
 		GameServer()->SendBroadcast_Localization(-1, BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE, _("The undead is finally dead"), NULL);
 		GameServer()->CreateSoundGlobal(SOUND_CTF_RETURN);
 	}
-	else if(GetClass() == PLAYERCLASS_EVILKING)
+	else if(GetClass() == PLAYERCLASS_JOESTER)
 	{
 		m_pPlayer->StartInfection(true);
 		GameServer()->SendBroadcast_Localization(-1, BROADCAST_PRIORITY_GAMEANNOUNCE, BROADCAST_DURATION_GAMEANNOUNCE, _("The Zombie King are dead....?"), NULL);
@@ -3208,7 +3225,7 @@ void CCharacter::Snap(int SnappingClient)
 
 	if(SnappingClient != -1)
 	{
-	if(GetClass() == PLAYERCLASS_GHOST || GetClass() == PLAYERCLASS_EVILKING)
+	if(GetClass() == PLAYERCLASS_GHOST || GetClass() == PLAYERCLASS_JOESTER)
 	{
 		if(!pClient->IsZombie() && m_IsInvisible) return;
 	}
@@ -3446,7 +3463,7 @@ void CCharacter::Snap(int SnappingClient)
 		pCharacter->m_Weapon = m_ActiveWeapon;
 	}
 	
-	if(GetClass() == PLAYERCLASS_SPIDER || GetClass() == PLAYERCLASS_EVILKING)
+	if(GetClass() == PLAYERCLASS_SPIDER || GetClass() == PLAYERCLASS_JOESTER)
 	{
 		pCharacter->m_HookTick -= (g_Config.m_InfSpiderHookTime - 1) * SERVER_TICK_SPEED-SERVER_TICK_SPEED/5;
 		if(pCharacter->m_HookTick < 0)
@@ -3693,20 +3710,21 @@ void CCharacter::ClassSpawnAttributes()
 				m_pPlayer->m_knownClass[PLAYERCLASS_MEDIC] = true;
 			}
 			break;
-		case PLAYERCLASS_FFS:
+		case PLAYERCLASS_VALENTINE:
 			RemoveAllGun();
 			m_pPlayer->m_InfectionTick = -1;
 			m_Health = 7;
 			GiveWeapon(WEAPON_GUN, -1);
+			GiveWeapon(WEAPON_SHOTGUN, -1);
 			GiveWeapon(WEAPON_GRENADE, -1);
 			GiveWeapon(WEAPON_RIFLE, -1);
 			m_ActiveWeapon = WEAPON_RIFLE;
 			
-			GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PLAYERCLASS_FFS);
-			if(!m_pPlayer->IsKnownClass(PLAYERCLASS_FFS))
+			GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PLAYERCLASS_VALENTINE);
+			if(!m_pPlayer->IsKnownClass(PLAYERCLASS_VALENTINE))
 			{
 				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", "Funny Valentine", NULL);
-				m_pPlayer->m_knownClass[PLAYERCLASS_FFS] = true;
+				m_pPlayer->m_knownClass[PLAYERCLASS_VALENTINE] = true;
 			}
 			break;
 		case PLAYERCLASS_HERO:
@@ -3901,7 +3919,7 @@ void CCharacter::ClassSpawnAttributes()
 				m_pPlayer->m_knownClass[PLAYERCLASS_UNDEAD] = true;
 			}
 			break;
-		case PLAYERCLASS_EVILKING:
+		case PLAYERCLASS_JOESTER:
 			m_Health = 20;
 			m_Armor = 10;
 			RemoveAllGun();
@@ -3909,11 +3927,11 @@ void CCharacter::ClassSpawnAttributes()
 			GiveWeapon(WEAPON_HAMMER, -1);
 			m_ActiveWeapon = WEAPON_HAMMER;
 			
-			GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PLAYERCLASS_EVILKING);
-			if(!m_pPlayer->IsKnownClass(PLAYERCLASS_EVILKING))
+			GameServer()->SendBroadcast_ClassIntro(m_pPlayer->GetCID(), PLAYERCLASS_JOESTER);
+			if(!m_pPlayer->IsKnownClass(PLAYERCLASS_JOESTER))
 			{
 				GameServer()->SendChatTarget_Localization(m_pPlayer->GetCID(), CHATCATEGORY_DEFAULT, _("Type “/help {str:ClassName}” for more information about your class"), "ClassName", "ZKing", NULL);
-				m_pPlayer->m_knownClass[PLAYERCLASS_EVILKING] = true;
+				m_pPlayer->m_knownClass[PLAYERCLASS_JOESTER] = true;
 			}
 			break;
 		case PLAYERCLASS_WITCH:
@@ -4175,7 +4193,7 @@ int CCharacter::GetInfWeaponID(int WID)
 		switch(GetClass())
 		{
 			case PLAYERCLASS_MERCENARY:
-			case PLAYERCLASS_FFS:
+			case PLAYERCLASS_VALENTINE:
 				return INFWEAPON_MERCENARY_GUN;
 			default:
 				return INFWEAPON_GUN;
@@ -4214,7 +4232,7 @@ int CCharacter::GetInfWeaponID(int WID)
 				return INFWEAPON_HERO_GRENADE;
 			case PLAYERCLASS_LOOPER:
 				return INFWEAPON_LOOPER_GRENADE;
-			case PLAYERCLASS_FFS:
+			case PLAYERCLASS_VALENTINE:
 				return INFWEAPON_FFS_GRENADE;
 			default:
 				return INFWEAPON_GRENADE;
@@ -4238,7 +4256,7 @@ int CCharacter::GetInfWeaponID(int WID)
 				return INFWEAPON_BIOLOGIST_RIFLE;
 			case PLAYERCLASS_MEDIC:
 				return INFWEAPON_MEDIC_RIFLE;
-			case PLAYERCLASS_FFS:
+			case PLAYERCLASS_VALENTINE:
 				return INFWEAPON_FFS_RIFLE;
 			default:
 				return INFWEAPON_RIFLE;
@@ -4261,7 +4279,7 @@ void CCharacter::TeleportPlayer(vec2 Pos)
 {
 	m_Core.m_Pos = Pos;
 	m_Core.m_HookedPlayer = -1;
-	m_Core.m_HookState = HOOK_GRABBED;
+	m_Core.m_HookState = HOOK_RETRACT_END;
 	m_Core.m_HookPos = m_Core.m_Pos;
 }
 
@@ -4272,7 +4290,12 @@ void CCharacter::GenerateFPos(int ClientID)
 		randPos = vec2((rand() % (GameServer()->Collision()->GetWidth()*32 + 16)),(rand() % (GameServer()->Collision()->GetHeight()*32 + 16)));
 	if(GameServer()->Collision()->GetZoneValueAt(GameServer()->m_ZoneHandle_Damage, randPos) == ZONE_DAMAGE_INFECTION || 
 	   GameServer()->Collision()->CheckPhysicsFlag(randPos, CCollision::COLFLAG_SOLID) ||
-	   GameServer()->Collision()->CheckPhysicsFlag(randPos, CCollision::COLFLAG_NOHOOK))
+	   GameServer()->Collision()->CheckPhysicsFlag(randPos, CCollision::COLFLAG_NOHOOK) || 
+	   GameServer()->Collision()->CheckPhysicsFlag(randPos, CCollision::COLFLAG_WATER) ||
+	   GameServer()->Collision()->GetZoneValueAt(GameServer()->m_ZoneHandle_Damage, randPos) == ZONE_DAMAGE_DEATH ||
+	   GameServer()->Collision()->GetZoneValueAt(GameServer()->m_ZoneHandle_Damage, randPos) == ZONE_DAMAGE_DEATH_NOUNDEAD ||
+	   GameServer()->Collision()->GetZoneValueAt(GameServer()->m_ZoneHandle_Damage, randPos) == ZONE_DAMAGE_DEATH_INFECTED ||
+	   randPos.y >= (GameServer()->Collision()->GetHeight()/2/2))
 	{
 		GenerateFPos(ClientID);
 		return;
@@ -4280,6 +4303,9 @@ void CCharacter::GenerateFPos(int ClientID)
 
 	m_D4CToPos = randPos;
 	TeleportPlayer(m_D4CToPos);
+
+	new CGrowingExplosion(&GameServer()->m_World, m_D4CToPos, vec2(0, 0), -1, 4, GROWINGEXPLOSIONEFFECT_SMOKE);
+	GameServer()->SendChatTarget(ClientID, "Valentine: \"This is...【DIRTY DEEP DONE DIRT CHEAP】\", My STAND.. 'D4C'");
 }
 
 /* INFECTION MODIFICATION END *****************************************/

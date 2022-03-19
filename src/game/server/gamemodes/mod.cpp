@@ -549,7 +549,7 @@ void CGameControllerMOD::Snap(int SnappingClient)
 				case PLAYERCLASS_LOOPER:
 					Defender++;
 					break;
-				case PLAYERCLASS_FFS:
+				case PLAYERCLASS_VALENTINE:
 					King++;
 					break;
 					
@@ -861,7 +861,7 @@ int CGameControllerMOD::ChooseHumanClass(const CPlayer *pPlayer) const
 			case PLAYERCLASS_LOOPER:
 				nbDefender++;
 				break;
-			case PLAYERCLASS_FFS:
+			case PLAYERCLASS_VALENTINE:
 				nbKing++;
 				break;
 		}
@@ -901,7 +901,7 @@ int CGameControllerMOD::ChooseHumanClass(const CPlayer *pPlayer) const
 	Probability[PLAYERCLASS_LOOPER - START_HUMANCLASS - 1] =
 		(nbDefender < g_Config.m_InfDefenderLimit && g_Config.m_InfEnableLooper) ?
 		1.0f : 0.0f;
-	Probability[PLAYERCLASS_FFS - START_HUMANCLASS - 1] =
+	Probability[PLAYERCLASS_VALENTINE - START_HUMANCLASS - 1] =
 		(nbKing < g_Config.m_InfKingLimit && g_Config.m_InfEnableFFS) ?
 		1.0f : 0.0f;
 	
@@ -934,7 +934,7 @@ int CGameControllerMOD::ChooseInfectedClass(const CPlayer *pPlayer) const
 		if(Iter.Player()->IsZombie()) nbInfected++;
 		if(Iter.Player()->GetClass() == PLAYERCLASS_WITCH) thereIsAWitch = true;
 		if(Iter.Player()->GetClass() == PLAYERCLASS_UNDEAD) thereIsAnUndead = true;
-		if(Iter.Player()->GetClass() == PLAYERCLASS_EVILKING) thereIsAZKing = true;
+		if(Iter.Player()->GetClass() == PLAYERCLASS_JOESTER) thereIsAZKing = true;
 	}
 	
 	double Probability[NB_INFECTEDCLASS];
@@ -975,7 +975,7 @@ int CGameControllerMOD::ChooseInfectedClass(const CPlayer *pPlayer) const
 		(Server()->GetClassAvailability(PLAYERCLASS_UNDEAD) && nbInfected > 2 && !thereIsAnUndead) ?
 		(double) g_Config.m_InfProbaUndead : 0.0f;
 	Probability[PLAYERCLASS_UNDEAD - START_INFECTEDCLASS - 1] =
-		(Server()->GetClassAvailability(PLAYERCLASS_EVILKING) && nbInfected > 2 && !thereIsAZKing) ?
+		(Server()->GetClassAvailability(PLAYERCLASS_JOESTER) && nbInfected > 2 && !thereIsAZKing) ?
 		(double) g_Config.m_InfProbaEvilKing : 0.0f;
 	
 	int Seconds = (Server()->Tick()-m_RoundStartTick)/((float)Server()->TickSpeed());
@@ -1010,7 +1010,7 @@ bool CGameControllerMOD::IsEnabledClass(int PlayerClass) {
 			return g_Config.m_InfEnableSniper;
 		case PLAYERCLASS_LOOPER:
 			return g_Config.m_InfEnableLooper;
-		case PLAYERCLASS_FFS:
+		case PLAYERCLASS_VALENTINE:
 			return g_Config.m_InfEnableFFS;
 		default:
 			return false;
@@ -1053,7 +1053,7 @@ bool CGameControllerMOD::IsChoosableClass(int PlayerClass)
 			case PLAYERCLASS_LOOPER:
 				nbDefender++;
 				break;
-			case PLAYERCLASS_FFS:
+			case PLAYERCLASS_VALENTINE:
 				nbKing++;
 				break;
 		}
@@ -1076,7 +1076,7 @@ bool CGameControllerMOD::IsChoosableClass(int PlayerClass)
 			return (nbSupport < g_Config.m_InfSupportLimit);
 		case PLAYERCLASS_LOOPER:
 			return (nbDefender < g_Config.m_InfDefenderLimit);
-		case PLAYERCLASS_FFS:
+		case PLAYERCLASS_VALENTINE:
 			return (nbKing < g_Config.m_InfKingLimit);
 	}
 	

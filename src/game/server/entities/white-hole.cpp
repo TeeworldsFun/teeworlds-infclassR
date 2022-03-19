@@ -208,8 +208,6 @@ void CWhiteHole::Tick()
 
 		MoveParticles();
 		MovePlayers();
-		GameServer()->CreateLaserDotEvent(vec2(m_Pos.x+1, m_Pos.y+1), m_Pos*2, 50);
-		GameServer()->CreateLaserDotEvent(m_Pos*2, m_Pos*3, 50);
 	}
 }
 

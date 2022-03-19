@@ -609,9 +609,9 @@ int CServer::Init()
 	SetFireDelay(INFWEAPON_NINJA_HAMMER, GetFireDelay(INFWEAPON_NINJA));
 	SetFireDelay(INFWEAPON_NINJA_GRENADE, GetFireDelay(INFWEAPON_GRENADE));
 	SetFireDelay(INFWEAPON_MERCENARY_GRENADE, GetFireDelay(INFWEAPON_GRENADE));
-	SetFireDelay(INFWEAPON_MERCENARY_GUN, 50);
+	SetFireDelay(INFWEAPON_MERCENARY_GUN, 1);
 	SetFireDelay(INFWEAPON_FFS_GRENADE, 400);
-	SetFireDelay(INFWEAPON_FFS_RIFLE, 700);
+	SetFireDelay(INFWEAPON_FFS_RIFLE, 1000);
 	
 	SetAmmoRegenTime(INFWEAPON_NONE, 0);
 	SetAmmoRegenTime(INFWEAPON_HAMMER, 0);
@@ -641,7 +641,7 @@ int CServer::Init()
 	SetAmmoRegenTime(INFWEAPON_LOOPER_RIFLE, 750);
 	SetAmmoRegenTime(INFWEAPON_LOOPER_GRENADE, 5000);
 	SetAmmoRegenTime(INFWEAPON_FFS_GRENADE, 5000);
-	SetAmmoRegenTime(INFWEAPON_FFS_RIFLE, 4000);
+	SetAmmoRegenTime(INFWEAPON_FFS_RIFLE, 10000);
 
 
 	SetMaxAmmo(INFWEAPON_NONE, -1);
@@ -670,7 +670,7 @@ int CServer::Init()
 	SetMaxAmmo(INFWEAPON_BIOLOGIST_SHOTGUN, 10);
 	SetMaxAmmo(INFWEAPON_LOOPER_RIFLE, 10);
 	SetMaxAmmo(INFWEAPON_LOOPER_GRENADE, 10);
-	SetMaxAmmo(INFWEAPON_FFS_RIFLE, 7);
+	SetMaxAmmo(INFWEAPON_FFS_RIFLE, 5);
 	SetMaxAmmo(INFWEAPON_FFS_GRENADE, 2);
 
 	
@@ -684,7 +684,7 @@ int CServer::Init()
 	SetClassAvailability(PLAYERCLASS_SCIENTIST, 2);
 	SetClassAvailability(PLAYERCLASS_BIOLOGIST, 2);
 	SetClassAvailability(PLAYERCLASS_LOOPER, 2);
-	SetClassAvailability(PLAYERCLASS_FFS, 2);
+	SetClassAvailability(PLAYERCLASS_VALENTINE, 2);
 	
 	SetClassAvailability(PLAYERCLASS_SMOKER, 1);
 	SetClassAvailability(PLAYERCLASS_HUNTER, 1);
@@ -697,7 +697,7 @@ int CServer::Init()
 	SetClassAvailability(PLAYERCLASS_VOODOO, 1);
 	SetClassAvailability(PLAYERCLASS_UNDEAD, 1);
 	SetClassAvailability(PLAYERCLASS_WITCH, 1);
-	SetClassAvailability(PLAYERCLASS_EVILKING, 1);
+	SetClassAvailability(PLAYERCLASS_JOESTER, 1);
 	
 	m_InfClassChooser = 1;
 /* INFECTION MODIFICATION END *****************************************/

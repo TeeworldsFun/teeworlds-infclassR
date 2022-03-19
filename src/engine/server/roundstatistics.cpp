@@ -83,7 +83,7 @@ int CRoundStatistics::CPlayer::OnScoreEvent(int EventType, int Class)
 		case PLAYERCLASS_SNIPER:
 			m_SniperScore += Points;
 			break;
-		case PLAYERCLASS_FFS:
+		case PLAYERCLASS_VALENTINE:
 			m_FFSScore += Points;
 			break;
 		case PLAYERCLASS_SMOKER:
@@ -116,7 +116,7 @@ int CRoundStatistics::CPlayer::OnScoreEvent(int EventType, int Class)
 		case PLAYERCLASS_UNDEAD:
 			m_UndeadScore += Points;
 			break;
-		case PLAYERCLASS_EVILKING:
+		case PLAYERCLASS_JOESTER:
 			m_ZKingScore += Points;
 			break;
 		case PLAYERCLASS_WITCH:

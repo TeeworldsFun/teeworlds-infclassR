@@ -84,7 +84,7 @@ void CTurret::Tick()
 	for(CCharacter *pChr = (CCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); pChr; pChr = (CCharacter *)pChr->TypeNext()) 
 	{
 		if(!pChr->IsZombie()) continue;
-		if(pChr->GetClass() == PLAYERCLASS_UNDEAD || pChr->GetClass() == PLAYERCLASS_EVILKING && pChr->IsFrozen()) continue;
+		if(pChr->GetClass() == PLAYERCLASS_UNDEAD || pChr->GetClass() == PLAYERCLASS_JOESTER && pChr->IsFrozen()) continue;
 		if(pChr->GetClass() == PLAYERCLASS_VOODOO && pChr->m_VoodooAboutToDie) continue;
 		
 		float Len = distance(pChr->m_Pos, m_Pos);
@@ -147,7 +147,7 @@ void CTurret::Tick()
 		if(!m_ammunition) break;
 		
 		if(!pChr->IsZombie() ||
-			(pChr->GetClass() == PLAYERCLASS_UNDEAD || pChr->GetClass() == PLAYERCLASS_EVILKING && pChr->IsFrozen() ) ||
+			(pChr->GetClass() == PLAYERCLASS_UNDEAD || pChr->GetClass() == PLAYERCLASS_JOESTER && pChr->IsFrozen() ) ||
 			(pChr->GetClass() == PLAYERCLASS_VOODOO && pChr->m_VoodooAboutToDie) ) continue;
 		
 		float Len = distance(pChr->m_Pos, m_Pos);

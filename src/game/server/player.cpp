@@ -307,7 +307,7 @@ void CPlayer::Snap(int SnappingClient)
 				case PLAYERCLASS_NINJA:
 					str_format(aClanName, sizeof(aClanName), "%sNinja", Server()->IsClientLogged(GetCID()) ? "@" : " ");
 					break;
-				case PLAYERCLASS_FFS:
+				case PLAYERCLASS_VALENTINE:
 					str_format(aClanName, sizeof(aClanName), "%sValentine", Server()->IsClientLogged(GetCID()) ? "@" : " ");
 					break;
 				case PLAYERCLASS_SMOKER:
@@ -343,7 +343,7 @@ void CPlayer::Snap(int SnappingClient)
 				case PLAYERCLASS_WITCH:
 					str_format(aClanName, sizeof(aClanName), "%sWitch", Server()->IsClientLogged(GetCID()) ? "@" : " ");
 					break;
-				case PLAYERCLASS_EVILKING:
+				case PLAYERCLASS_JOESTER:
 					str_format(aClanName, sizeof(aClanName), "%sZKing", Server()->IsClientLogged(GetCID()) ? "@" : " ");
 					break;
 				default:
@@ -658,9 +658,11 @@ void CPlayer::SetClassSkin(int newClass, int State)
 			m_TeeInfos.m_ColorBody = 255;
 			m_TeeInfos.m_ColorFeet = 0;
 			break;
-		case PLAYERCLASS_FFS:
+		case PLAYERCLASS_VALENTINE:
 			m_TeeInfos.m_UseCustomColor = 1;
 			str_copy(m_TeeInfos.m_SkinName, "oldman", sizeof(m_TeeInfos.m_SkinName));
+			m_TeeInfos.m_ColorBody = 3612455;
+			m_TeeInfos.m_ColorFeet = 15359;
 			break;
 		case PLAYERCLASS_SMOKER:
 			m_TeeInfos.m_UseCustomColor = 1;
@@ -732,7 +734,7 @@ void CPlayer::SetClassSkin(int newClass, int State)
 			m_TeeInfos.m_ColorBody = 3014400;
 			m_TeeInfos.m_ColorFeet = 13168;
 			break;
-		case PLAYERCLASS_EVILKING:
+		case PLAYERCLASS_JOESTER:
 			m_TeeInfos.m_UseCustomColor = 1;
 			str_copy(m_TeeInfos.m_SkinName, "saddo", sizeof(m_TeeInfos.m_SkinName));
 			m_TeeInfos.m_ColorBody = 3014400;

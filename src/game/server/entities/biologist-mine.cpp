@@ -91,7 +91,7 @@ void CBiologistMine::Tick()
 	for(CCharacter *p = (CCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CCharacter *)p->TypeNext())
 	{
 		if(p->IsHuman()) continue;
-		if(p->GetClass() == PLAYERCLASS_UNDEAD || p->GetClass() == PLAYERCLASS_EVILKING && p->IsFrozen()) continue;
+		if(p->GetClass() == PLAYERCLASS_UNDEAD || p->GetClass() == PLAYERCLASS_JOESTER && p->IsFrozen()) continue;
 		if(p->GetClass() == PLAYERCLASS_VOODOO && p->m_VoodooAboutToDie) continue;
 
 		vec2 IntersectPos = closest_point_on_line(m_Pos, m_EndPos, p->m_Pos);

@@ -5,7 +5,7 @@
 #include "growingexplosion.h"
 
 CLoveTrain::CLoveTrain(CGameWorld* pGameWorld, vec2 Pos, float Radius, int Owner)
-	: CEntity(pGameWorld, CGameWorld::ENTTYPE_SCIENTIST_MINE)
+	: CEntity(pGameWorld, CGameWorld::ENTTYPE_D4C)
 {
 	m_Pos = Pos;
 	GameWorld()->InsertEntity(this);
@@ -83,9 +83,7 @@ void CLoveTrain::Tick()
 	int DetonatedBy = -1;
 	for(CCharacter *p = (CCharacter*) GameWorld()->FindFirst(CGameWorld::ENTTYPE_CHARACTER); p; p = (CCharacter *)p->TypeNext())
 	{
-		if(p->IsHuman()) continue;
-		if(p->GetClass() == PLAYERCLASS_UNDEAD || p->GetClass() == PLAYERCLASS_EVILKING && p->IsFrozen()) continue;
-		if(p->GetClass() == PLAYERCLASS_VOODOO && p->m_VoodooAboutToDie) continue;
+		if(p->IsHuman() || p->GetClass() == PLAYERCLASS_JOESTER) continue;
 
 		float Len = distance(p->m_Pos, m_Pos);
 		if(Len < GetRadius())

@@ -124,6 +124,7 @@ void CFFSGrenade::Snap(int SnappingClient)
 void CFFSGrenade::Explode()
 {
 	new CGrowingExplosion(GameWorld(), m_ActualPos, m_ActualDir, m_Owner, 1, GROWINGEXPLOSIONEFFECT_FREEZE_INFECTED);
-	GameServer()->CreateSoundGlobal(SOUND_CTF_CAPTURE);
+	new CGrowingExplosion(GameWorld(), m_ActualPos, m_ActualDir, -1, 1, GROWINGEXPLOSIONEFFECT_D4C_SELF);	
+	GameServer()->CreateSoundGlobal(SOUND_PLAYER_SPAWN);
 	GameServer()->m_World.DestroyEntity(this);
 }

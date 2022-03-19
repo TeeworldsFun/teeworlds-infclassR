@@ -194,12 +194,21 @@ void CGrowingExplosion::Tick()
 							if (random_prob(1.0f))
 							{
 								GameServer()->CreatePlayerSpawn(TileCenter);
+								GameServer()->CreateDeath(TileCenter, GetOwner());
 							}
 							break;
-						case GROWINGEXPLOSIONEFFECT_D4C_EFFECT:
+						case GROWINGEXPLOSIONEFFECT_D4C_SELF:
 							if (random_prob(1.0f))
 							{
 								GameServer()->CreatePlayerSpawn(TileCenter);
+								GameServer()->CreateDeath(TileCenter, GetOwner());
+							}
+							break;
+						case GROWINGEXPLOSIONEFFECT_SMOKE:
+							if (random_prob(1.0f))
+							{
+								GameServer()->CreatePlayerSpawn(TileCenter);
+								GameServer()->CreateDeath(TileCenter, GetOwner());
 							}
 							break;
 						case GROWINGEXPLOSIONEFFECT_ELECTRIC_INFECTED:
@@ -348,10 +357,16 @@ void CGrowingExplosion::Tick()
 						m_Hit[p->GetPlayer()->GetCID()] = true;
 						break;
 					}
-					case GROWINGEXPLOSIONEFFECT_D4C_EFFECT:
+					case GROWINGEXPLOSIONEFFECT_D4C_SELF:
 					{
+						p->GenerateFPos(p->GetPlayer()->GetCID());
 						GameServer()->SendEmoticon(p->GetPlayer()->GetCID(), EMOTICON_EXCLAMATION);
 						m_Hit[p->GetPlayer()->GetCID()] = true;
+						break;
+					}
+					case GROWINGEXPLOSIONEFFECT_SMOKE:
+					{
+						// empty
 						break;
 					}
 				}

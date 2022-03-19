@@ -790,7 +790,7 @@ void CGameContext::SendBroadcast_ClassIntro(int ClientID, int Class)
 		case PLAYERCLASS_LOOPER:
 			pClassName = Server()->Localization()->Localize(m_apPlayers[ClientID]->GetLanguage(), _("Looper"));
 			break;
-		case PLAYERCLASS_FFS:
+		case PLAYERCLASS_VALENTINE:
 			pClassName = Server()->Localization()->Localize(m_apPlayers[ClientID]->GetLanguage(), _("Valentine"));
 			break;
 		case PLAYERCLASS_SMOKER:
@@ -826,7 +826,7 @@ void CGameContext::SendBroadcast_ClassIntro(int ClientID, int Class)
 		case PLAYERCLASS_UNDEAD:
 			pClassName = Server()->Localization()->Localize(m_apPlayers[ClientID]->GetLanguage(), _("Undead"));
 			break;
-		case PLAYERCLASS_EVILKING:
+		case PLAYERCLASS_JOESTER:
 			pClassName = Server()->Localization()->Localize(m_apPlayers[ClientID]->GetLanguage(), _("ZKing"));
 			break;
 		default:
@@ -2988,7 +2988,7 @@ bool CGameContext::ConSetClass(IConsole::IResult *pResult, void *pUserData)
 	else if(str_comp(pClassName, "ninja") == 0) pPlayer->SetClass(PLAYERCLASS_NINJA);
 	else if(str_comp(pClassName, "mercenary") == 0) pPlayer->SetClass(PLAYERCLASS_MERCENARY);
 	else if(str_comp(pClassName, "sniper") == 0) pPlayer->SetClass(PLAYERCLASS_SNIPER);
-	else if(str_comp(pClassName, "king") == 0) pPlayer->SetClass(PLAYERCLASS_FFS);
+	else if(str_comp(pClassName, "king") == 0) pPlayer->SetClass(PLAYERCLASS_VALENTINE);
 	else if(str_comp(pClassName, "smoker") == 0) pPlayer->SetClass(PLAYERCLASS_SMOKER);
 	else if(str_comp(pClassName, "hunter") == 0) pPlayer->SetClass(PLAYERCLASS_HUNTER);
 	else if(str_comp(pClassName, "bat") == 0) pPlayer->SetClass(PLAYERCLASS_BAT);
@@ -3000,7 +3000,7 @@ bool CGameContext::ConSetClass(IConsole::IResult *pResult, void *pUserData)
 	else if(str_comp(pClassName, "voodoo") == 0) pPlayer->SetClass(PLAYERCLASS_VOODOO);
 	else if(str_comp(pClassName, "undead") == 0) pPlayer->SetClass(PLAYERCLASS_UNDEAD);
 	else if(str_comp(pClassName, "witch") == 0) pPlayer->SetClass(PLAYERCLASS_WITCH);
-	else if(str_comp(pClassName, "zking") == 0) pPlayer->SetClass(PLAYERCLASS_EVILKING);
+	else if(str_comp(pClassName, "zking") == 0) pPlayer->SetClass(PLAYERCLASS_JOESTER);
 	else if(str_comp(pClassName, "none") == 0)
 	{
 		pPlayer->SetClass(PLAYERCLASS_NONE);
@@ -3170,7 +3170,7 @@ bool CGameContext::PrivateMessage(const char* pStr, int ClientID, bool TeamChat)
 			}
 			else if(str_comp(aNameFound, "!valentine") == 0 && m_apPlayers[ClientID] && m_apPlayers[ClientID]->GetCharacter())
 			{
-				CheckClass = PLAYERCLASS_FFS;
+				CheckClass = PLAYERCLASS_VALENTINE;
 				str_copy(aChatTitle, "Valentine", sizeof(aChatTitle));
 			}
 			else if(str_comp(aNameFound, "!hero") == 0 && m_apPlayers[ClientID] && m_apPlayers[ClientID]->GetCharacter())
@@ -3240,7 +3240,7 @@ bool CGameContext::PrivateMessage(const char* pStr, int ClientID, bool TeamChat)
 			}
 			else if(str_comp(aNameFound, "!ZKing") == 0 && m_apPlayers[ClientID] && m_apPlayers[ClientID]->GetCharacter())
 			{
-				CheckClass = PLAYERCLASS_EVILKING;
+				CheckClass = PLAYERCLASS_JOESTER;
 				str_copy(aChatTitle, "ZKing", sizeof(aChatTitle));
 			}
 			else if(str_comp(aNameFound, "!witch") == 0 && m_apPlayers[ClientID] && m_apPlayers[ClientID]->GetCharacter())
